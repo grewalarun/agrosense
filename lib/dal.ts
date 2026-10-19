@@ -1,6 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ACCESS_COOKIE, NAME_COOKIE, apiBaseUrl } from "@/lib/session";
 
 // Clears the session cookies and sends the user to /login
@@ -55,4 +55,14 @@ export async function apiFetch<T>(
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new ApiError(res.status, data.message || "Something went wrong");
   return data as T;
+}
+
+// Turns a bad id (400), someone else's record (403) or a missing one (404) into the 404 page
+export async function orNotFound<T>(request: Promise<T>): Promise<T> {
+  try {
+    return await request;
+  } catch (error) {
+    if (error instanceof ApiError && [400, 403, 404].includes(error.status)) notFound();
+    throw error;
+  }
 }

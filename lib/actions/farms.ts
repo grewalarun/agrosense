@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { ApiError, apiFetch } from "@/lib/dal";
+import { apiFetch } from "@/lib/dal";
+import { type Result, run } from "@/lib/actions/run";
 import type { AreaUnit, Farm, Field, Location } from "@/lib/types";
 
 export type FarmInput = {
@@ -21,19 +22,6 @@ export type FieldInput = {
   irrigationType?: string;
   notes?: string;
 };
-
-type Result<T> = { data: T; error?: undefined } | { data?: undefined; error: string };
-
-// Backend errors become a message for the form; anything else (including Next's
-// redirect to /login when the session is gone) is rethrown.
-async function run<T>(request: () => Promise<T>): Promise<Result<T>> {
-  try {
-    return { data: await request() };
-  } catch (error) {
-    if (error instanceof ApiError) return { error: error.message };
-    throw error;
-  }
-}
 
 export async function createFarmAction(input: FarmInput): Promise<Result<{ farmId: string }>> {
   const result = await run(() => apiFetch<{ farm: Farm }>("/farms", { method: "POST", body: input }));

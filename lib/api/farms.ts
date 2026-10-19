@@ -1,17 +1,7 @@
 import "server-only";
 import { notFound } from "next/navigation";
-import { ApiError, apiFetch } from "@/lib/dal";
+import { apiFetch, orNotFound } from "@/lib/dal";
 import type { CycleRow, Expense, Farm, FarmCard, FarmReport, Field, FieldReport, Sale } from "@/lib/types";
-
-// Turns a bad id (400), someone else's record (403) or a missing one (404) into the 404 page
-async function orNotFound<T>(request: Promise<T>): Promise<T> {
-  try {
-    return await request;
-  } catch (error) {
-    if (error instanceof ApiError && [400, 403, 404].includes(error.status)) notFound();
-    throw error;
-  }
-}
 
 export async function getFarmCards() {
   return apiFetch<{ farms: FarmCard[] }>("/reports/farms");
