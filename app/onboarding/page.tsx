@@ -5,6 +5,7 @@ import { Leaf, ChevronRight, CheckCircle2 } from "lucide-react";
 import { completeOnboardingAction } from "@/lib/actions/farms";
 import { AREA_UNITS, IRRIGATION_TYPES, SOIL_TYPES, formatArea } from "@/lib/format";
 import type { AreaUnit } from "@/lib/types";
+import Spinner from "@/components/Spinner";
 
 const STEPS = ["Welcome", "Your Farm", "First Field", "Done"];
 
@@ -204,7 +205,7 @@ export default function OnboardingPage() {
             <div className="flex gap-3 pt-1">
               <button onClick={() => setStep(1)} className="btn-secondary px-4">← Back</button>
               <button onClick={complete} disabled={saving} className="btn-primary flex-1 justify-center py-2.5">
-                {saving ? "Setting up…" : "Complete Setup ✓"}
+                {saving && <Spinner />}{saving ? "Setting up…" : "Complete Setup ✓"}
               </button>
             </div>
           </div>

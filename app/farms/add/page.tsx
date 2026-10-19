@@ -7,6 +7,7 @@ import { ChevronLeft } from "lucide-react";
 import { createFarmAction } from "@/lib/actions/farms";
 import { AREA_UNITS, IRRIGATION_TYPES, SOIL_TYPES } from "@/lib/format";
 import type { AreaUnit } from "@/lib/types";
+import Spinner from "@/components/Spinner";
 
 const EMPTY_FORM = { name: "", village: "", district: "", state: "", totalArea: "", areaUnit: "ACRE" as AreaUnit, soilType: "", irrigation: "" };
 
@@ -105,7 +106,7 @@ export default function AddFarmPage() {
           </div>
           {errors.form && <p className="bg-red-50 text-red-600 text-sm rounded-lg p-3">{errors.form}</p>}
           <button type="submit" disabled={saving} className="btn-primary w-full justify-center py-2.5">
-            {saving ? "Creating…" : "Create Farm ✓"}
+            {saving && <Spinner />}{saving ? "Creating…" : "Create Farm ✓"}
           </button>
         </form>
       </main>

@@ -6,6 +6,7 @@ import { ChevronLeft, CheckCircle2 } from "lucide-react";
 import { createExpenseAction } from "@/lib/actions/expenses";
 import { CYCLE_STATUS, EXPENSE_CATEGORIES, categoryLabel, formatDate } from "@/lib/format";
 import type { CycleStatus, ExpenseCategory } from "@/lib/types";
+import Spinner from "@/components/Spinner";
 
 type CycleOption = { cycleId: string; label: string; season: string; status: CycleStatus };
 
@@ -147,7 +148,7 @@ export default function AddExpenseForm({ farmId, cycles, initialCycleId }: {
               </div>
             )}
             {errors.form && <p className="bg-red-50 text-red-600 text-sm rounded-lg p-3">{errors.form}</p>}
-            <button type="submit" disabled={saving} className="btn-primary w-full justify-center py-2.5">{saving ? "Saving…" : "Add Expense ✓"}</button>
+            <button type="submit" disabled={saving} className="btn-primary w-full justify-center py-2.5">{saving && <Spinner />}{saving ? "Saving…" : "Add Expense ✓"}</button>
           </form>
         )}
       </main>

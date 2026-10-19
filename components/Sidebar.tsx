@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
@@ -38,7 +38,21 @@ function buildNav(farmId: string | null) {
   ];
 }
 
-export default function Sidebar({ userName, defaultFarmId }: { userName: string; defaultFarmId: string | null }) {
+// Small dot that pulses while the link's page is loading
+function PendingDot() {
+  const { pending } = useLinkStatus();
+  return (
+    <span aria-hidden
+      className={`ml-auto w-1.5 h-1.5 rounded-full bg-accent-300 transition-opacity ${pending ? "opacity-100 animate-pulse" : "opacity-0"}`} />
+  );
+}
+
+// `loading`: rendered as the Suspense fallback while the user's name and farms load
+export default function Sidebar({ userName, defaultFarmId, loading = false }: {
+  userName: string;
+  defaultFarmId: string | null;
+  loading?: boolean;
+}) {
   const pathname = usePathname();
   const params = useParams();
   const farmId = (params.farmId as string | undefined) ?? defaultFarmId;
@@ -86,6 +100,7 @@ export default function Sidebar({ userName, defaultFarmId }: { userName: string;
                   >
                     <item.icon size={16} />
                     {item.label}
+                    <PendingDot />
                   </Link>
                 );
               })}
@@ -97,11 +112,13 @@ export default function Sidebar({ userName, defaultFarmId }: { userName: string;
       {/* User */}
       <div className="px-3 py-4 border-t border-primary-700">
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg">
-          <div className="w-8 h-8 rounded-full bg-accent-400 flex items-center justify-center text-primary-800 font-bold text-xs flex-shrink-0">
+          <div className={`w-8 h-8 rounded-full bg-accent-400 flex items-center justify-center text-primary-800 font-bold text-xs flex-shrink-0 ${loading ? "animate-pulse opacity-60" : ""}`}>
             {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white text-sm font-medium truncate">{userName}</p>
+            {loading
+              ? <div className="h-3.5 w-24 rounded bg-primary-700 animate-pulse mb-1" aria-hidden />
+              : <p className="text-white text-sm font-medium truncate">{userName}</p>}
             <p className="text-primary-300 text-xs">Farm Owner</p>
           </div>
           <button onClick={handleLogout} className="text-primary-300 hover:text-white transition-colors" title="Logout">

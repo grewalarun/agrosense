@@ -9,6 +9,7 @@ import { COMMON_CROPS, cropEmoji } from "@/lib/crops";
 import { YIELD_UNITS, formatArea, formatDate } from "@/lib/format";
 import { SEASON_TYPES, currentSeasonType, seasonLabel } from "@/lib/season";
 import type { AreaUnit, SeasonType } from "@/lib/types";
+import Spinner from "@/components/Spinner";
 
 type FieldOption = { _id: string; name: string; area: number; areaUnit: AreaUnit; soilType?: string; activeCrop: string | null };
 
@@ -389,7 +390,7 @@ export default function AddCycleForm({ farmId, fields, userCrops, initialFieldId
               <div className="flex gap-3">
                 <button type="button" onClick={() => setStep(2)} className="btn-secondary flex-1 justify-center">← Back</button>
                 <button type="submit" disabled={saving} className="btn-primary flex-1 justify-center py-2.5">
-                  {saving ? "Saving…" : "🌱 Add Crop Cycle"}
+                  {saving && <Spinner />}{saving ? "Saving…" : "🌱 Add Crop Cycle"}
                 </button>
               </div>
             </div>

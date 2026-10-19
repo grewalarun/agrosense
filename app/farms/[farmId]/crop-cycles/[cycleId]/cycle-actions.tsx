@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Play, Lock, Trash2 } from "lucide-react";
 import { deleteCycleAction, updateCycleStatusAction } from "@/lib/actions/cycles";
@@ -13,22 +13,24 @@ export default function CycleActions({ farmId, fieldId, cycleId, status, cropNam
   cropName: string;
 }) {
   const router = useRouter();
-  const [busy, setBusy] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [refreshing, startRefresh] = useTransition();
+  const busy = saving || refreshing;
   const [error, setError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const changeStatus = async (next: CycleStatus) => {
-    setBusy(true); setError("");
+    setSaving(true); setError("");
     const result = await updateCycleStatusAction(cycleId, next);
-    setBusy(false);
+    setSaving(false);
     if (result.error !== undefined) setError(result.error);
-    else router.refresh();
+    else startRefresh(() => router.refresh());
   };
 
   const remove = async () => {
-    setBusy(true); setError("");
+    setSaving(true); setError("");
     const result = await deleteCycleAction(cycleId);
-    if (result.error !== undefined) { setBusy(false); setError(result.error); return; }
+    if (result.error !== undefined) { setSaving(false); setError(result.error); return; }
     router.push(`/farms/${farmId}/fields/${fieldId}`);
   };
 
@@ -64,6 +66,11 @@ export default function CycleActions({ farmId, fieldId, cycleId, status, cropNam
           </div>
         )}
       </div>
+      {busy && !confirmDelete && (
+        <p className="text-xs text-gray-500 flex items-center gap-1.5">
+          <span className="w-3 h-3 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" aria-hidden /> Updating…
+        </p>
+      )}
       {error && <p className="text-xs text-red-600">{error}</p>}
     </div>
   );
