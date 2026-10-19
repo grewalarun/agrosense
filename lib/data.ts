@@ -29,6 +29,7 @@ export type CropCycle = {
   season: string;
   startDate: string;
   endDate?: string;
+  expectedHarvestDate?: string;
   closedYear?: number; // financial year it closed: 2026 = FY 2025-26 (Apr25–Mar26)
   status: "Active" | "Harvested" | "Planned";
   expectedYield: number;

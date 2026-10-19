@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getUser } from "@/lib/auth";
+import { getUser } from "@/lib/dal";
 import Sidebar from "@/components/Sidebar";
 
 export default async function SettingsLayout({ children }: { children: React.ReactNode }) {

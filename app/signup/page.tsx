@@ -20,7 +20,8 @@ export default function SignupPage() {
     const result = await signupAction(name, email, password);
     setLoading(false);
     if (result.error) return setError(result.error);
-    router.push("/login?registered=1");
+    router.push("/onboarding");
+    router.refresh();
   };
 
   return (
