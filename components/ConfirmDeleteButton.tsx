@@ -2,9 +2,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
-import { deleteExpenseAction } from "@/lib/actions/expenses";
 
-export default function DeleteExpenseButton({ expenseId, label }: { expenseId: string; label: string }) {
+// Trash icon that asks for confirmation, then runs a (bound) server action
+export default function ConfirmDeleteButton({ action, label }: {
+  action: () => Promise<{ error?: string }>;
+  label: string;
+}) {
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -12,7 +15,7 @@ export default function DeleteExpenseButton({ expenseId, label }: { expenseId: s
 
   const remove = async () => {
     setBusy(true);
-    const result = await deleteExpenseAction(expenseId);
+    const result = await action();
     setBusy(false);
     if (result.error !== undefined) { setError(result.error); setConfirming(false); return; }
     router.refresh();

@@ -5,7 +5,8 @@ import { getFarmExpenses } from "@/lib/api/cycles";
 import { EXPENSE_CATEGORIES, categoryColor, categoryLabel, fmt, formatDate } from "@/lib/format";
 import { SEASON_TYPES } from "@/lib/season";
 import type { ExpenseCategory } from "@/lib/types";
-import DeleteExpenseButton from "./delete-expense-button";
+import ConfirmDeleteButton from "@/components/ConfirmDeleteButton";
+import { deleteExpenseAction } from "@/lib/actions/expenses";
 
 export default async function ExpensesPage(props: PageProps<"/farms/[farmId]/expenses">) {
   const { farmId } = await props.params;
@@ -79,7 +80,7 @@ export default async function ExpensesPage(props: PageProps<"/farms/[farmId]/exp
                         <td className="px-4 py-3 hidden md:table-cell"><span className="text-xs text-gray-500">{formatDate(e.date)}</span></td>
                         <td className="px-4 py-3 text-right"><span className="text-sm font-semibold text-red-600">{fmt(e.amount)}</span></td>
                         <td className="px-3 py-3 text-right">
-                          {cycle?.status !== "CLOSED" && <DeleteExpenseButton expenseId={e._id} label={e.description || categoryLabel(e.category)} />}
+                          {cycle?.status !== "CLOSED" && <ConfirmDeleteButton action={deleteExpenseAction.bind(null, e._id)} label={e.description || categoryLabel(e.category)} />}
                         </td>
                       </tr>
                     );

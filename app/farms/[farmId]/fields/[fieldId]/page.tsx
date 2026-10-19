@@ -3,7 +3,7 @@ import TopBar from "@/components/TopBar";
 import AIEstimatePanel from "@/components/AIEstimatePanel";
 import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Plus, Wheat, BarChart2 } from "lucide-react";
 import { getFarm, getFieldDetail } from "@/lib/api/farms";
-import { categoryLabel, fmt, formatArea, formatDate, formatLocation, signedFmt } from "@/lib/format";
+import { categoryLabel, daysUntil, fmt, formatArea, formatDate, formatLocation, signedFmt } from "@/lib/format";
 import type { CycleRow, Expense, Sale } from "@/lib/types";
 
 const COMPLETED = ["HARVESTED", "CLOSED"];
@@ -50,9 +50,7 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
   const maxProfit = Math.max(...seasons.map(s => Math.abs(s.profit)), 1);
   const yieldUnit = activeCycle?.yieldUnit ?? "";
   // Due within a week (or overdue), based on the expected harvest date entered when planting
-  const daysToHarvest = activeCycle?.expectedHarvestDate
-    ? Math.ceil((new Date(activeCycle.expectedHarvestDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-    : null;
+  const daysToHarvest = activeCycle?.expectedHarvestDate ? daysUntil(activeCycle.expectedHarvestDate) : null;
   const harvestDue = daysToHarvest !== null && daysToHarvest <= 7;
 
   return (

@@ -91,6 +91,33 @@ export type Sale = {
   date: string;
 };
 
+export type HarvestQuality = "A" | "B" | "C";
+
+export type Harvest = {
+  _id: string;
+  cycleId: string;
+  fieldId: string;
+  farmId: string;
+  quantity: number;
+  unit: string;
+  quality?: HarvestQuality;
+  date: string;
+  notes?: string;
+  soldQuantity: number;
+  remainingQuantity: number;
+};
+
+// GET /harvests and /sales, with crop and field populated
+export type HarvestListItem = Omit<Harvest, "fieldId"> & {
+  cropId: { _id: string; name: string } | null;
+  fieldId: { _id: string; name: string } | null;
+};
+
+export type SaleListItem = Omit<Sale, never> & {
+  fieldId: { _id: string; name: string } | null;
+  cropId: { _id: string; name: string } | null;
+};
+
 export type HarvestTotals = Record<string, { quantity: number; sold: number; remaining: number }>;
 
 // One crop cycle's profit & loss, as returned by the report endpoints

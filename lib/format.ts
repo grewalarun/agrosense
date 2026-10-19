@@ -23,6 +23,11 @@ export function formatLocation(location?: Location) {
   return [location?.village, location?.district, location?.state].filter(Boolean).join(", ");
 }
 
+// Whole days from now until the date (negative once it has passed)
+export function daysUntil(iso: string) {
+  return Math.ceil((new Date(iso).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+}
+
 // Dates are stored as UTC midnight, so format in UTC to avoid shifting the day
 export function formatDate(iso?: string) {
   if (!iso) return "";
