@@ -49,6 +49,11 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
   }, {});
   const maxProfit = Math.max(...seasons.map(s => Math.abs(s.profit)), 1);
   const yieldUnit = activeCycle?.yieldUnit ?? "";
+  // Due within a week (or overdue), based on the expected harvest date entered when planting
+  const daysToHarvest = activeCycle?.expectedHarvestDate
+    ? Math.ceil((new Date(activeCycle.expectedHarvestDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : null;
+  const harvestDue = daysToHarvest !== null && daysToHarvest <= 7;
 
   return (
     <div>
@@ -65,6 +70,14 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
             <p className="text-xs text-gray-400">
               {[farm.name, formatArea(field.area, field.areaUnit), field.soilType, field.irrigationType].filter(Boolean).join(" · ")}
             </p>
+            {harvestDue && activeCycle && (
+              <div className="flex items-center gap-1.5 mt-1">
+                <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+                <span className="text-xs font-semibold text-amber-700">
+                  Ready to Harvest · {formatDate(activeCycle.expectedHarvestDate)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -107,8 +120,10 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
                   <Plus size={12} /> Add expense
                 </Link>
                 <Link href={`/farms/${farmId}/fields/${fieldId}/harvest?cycleId=${activeCycle.cycleId}`}
-                  className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1">
-                  <Wheat size={12} /> Harvest & Sell
+                  className={`text-xs py-1.5 px-3 flex items-center gap-1 ${harvestDue
+                    ? "bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-colors"
+                    : "btn-primary"}`}>
+                  <Wheat size={12} /> {harvestDue ? "⚡ Harvest Now" : "Harvest & Sell"}
                 </Link>
               </div>
             </div>
@@ -121,7 +136,9 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
                 <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
                   <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-xl">🌱</div>
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-800">{activeCycle.crop?.name}</p>
+                    <Link href={`/farms/${farmId}/crop-cycles/${activeCycle.cycleId}`} className="font-semibold text-gray-800 hover:text-primary-700">
+                      {activeCycle.crop?.name}{activeCycle.variety && <span className="text-xs font-normal text-gray-400"> · {activeCycle.variety}</span>}
+                    </Link>
                     <p className="text-xs text-gray-400">Started {formatDate(activeCycle.startDate)} · {activeCycle.season}</p>
                   </div>
                   <span className="badge-yellow">Active</span>

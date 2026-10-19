@@ -34,6 +34,33 @@ export type Field = {
   status: "ACTIVE" | "INACTIVE";
 };
 
+export type Crop = {
+  _id: string;
+  name: string;
+  localName?: string;
+  defaultUnit: string;
+  active: boolean;
+};
+
+// GET /cycles/:id, with crop and field populated
+export type CropCycle = {
+  _id: string;
+  farmId: string;
+  fieldId: { _id: string; name: string; area: number; areaUnit: AreaUnit; soilType?: string; irrigationType?: string };
+  cropId: { _id: string; name: string; localName?: string };
+  seasonType: SeasonType;
+  seasonYear: string;
+  season: string;
+  status: CycleStatus;
+  startDate: string;
+  endDate?: string;
+  expectedHarvestDate?: string;
+  expectedYield?: number;
+  yieldUnit: string;
+  variety?: string;
+  notes?: string;
+};
+
 export type Expense = {
   _id: string;
   cycleId: string;
@@ -41,8 +68,15 @@ export type Expense = {
   farmId: string;
   category: ExpenseCategory;
   description?: string;
+  notes?: string;
   amount: number;
   date: string;
+};
+
+// GET /expenses, with field and the cycle's crop populated
+export type ExpenseListItem = Omit<Expense, "fieldId" | "cycleId"> & {
+  fieldId: { _id: string; name: string } | null;
+  cycleId: { _id: string; seasonType: SeasonType; seasonYear: string; status: CycleStatus; cropId: { name: string } | null } | null;
 };
 
 export type Sale = {
@@ -71,6 +105,8 @@ export type CycleRow = {
   status: CycleStatus;
   startDate: string;
   endDate?: string;
+  expectedHarvestDate?: string;
+  variety?: string;
   expenses: number;
   expensesByCategory: Partial<Record<ExpenseCategory, number>>;
   revenue: number;
