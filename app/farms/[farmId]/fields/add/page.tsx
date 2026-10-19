@@ -7,6 +7,7 @@ import { ChevronLeft, MapPin, Layers, CheckCircle2 } from "lucide-react";
 import { createFieldAction } from "@/lib/actions/farms";
 import { AREA_UNITS, IRRIGATION_TYPES, SOIL_TYPES } from "@/lib/format";
 import type { AreaUnit } from "@/lib/types";
+import Spinner from "@/components/Spinner";
 
 const EMPTY_FORM = { name: "", area: "", areaUnit: "ACRE" as AreaUnit, soil: "", irrigation: "", notes: "" };
 
@@ -303,7 +304,7 @@ export default function AddFieldPage() {
                   ← Back
                 </button>
                 <button type="submit" disabled={saving} className="btn-primary flex-1 justify-center py-2.5">
-                  {saving ? "Saving…" : "Add Field ✓"}
+                  {saving && <Spinner />}{saving ? "Saving…" : "Add Field ✓"}
                 </button>
               </div>
             </div>

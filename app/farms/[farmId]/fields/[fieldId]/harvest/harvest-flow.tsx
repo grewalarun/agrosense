@@ -7,6 +7,7 @@ import { harvestAndSellAction, type HarvestAndSellResult } from "@/lib/actions/h
 import { cropEmoji } from "@/lib/crops";
 import { fmt, formatDate, signedFmt, unitLabel } from "@/lib/format";
 import type { CycleStatus, HarvestQuality } from "@/lib/types";
+import Spinner from "@/components/Spinner";
 
 type SellRow = { id: string; quantity: string; pricePerUnit: string; buyerType: string; buyerName: string; date: string };
 type StockLot = { _id: string; date: string; remaining: number; quality?: HarvestQuality };
@@ -447,7 +448,7 @@ export default function HarvestFlow(props: {
             <div className="flex gap-3">
               <button onClick={() => setStep("sell")} disabled={saving} className="btn-secondary flex-1 justify-center">← Edit lots</button>
               <button onClick={handleSubmit} disabled={saving} className="btn-primary flex-1 justify-center py-2.5">
-                {saving ? "Saving…" : mode === "harvest" ? (finalHarvest ? "✓ Save & close harvest" : "✓ Save harvest") : "✓ Save sales"}
+                {saving && <Spinner />}{saving ? "Saving…" : mode === "harvest" ? (finalHarvest ? "✓ Save & close harvest" : "✓ Save harvest") : "✓ Save sales"}
               </button>
             </div>
           </div>
