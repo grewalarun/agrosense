@@ -3,60 +3,51 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import TopBar from "@/components/TopBar";
-import { ChevronLeft, CheckCircle2 } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
+import { createFarmAction } from "@/lib/actions/farms";
+import { AREA_UNITS, IRRIGATION_TYPES, SOIL_TYPES } from "@/lib/format";
+import type { AreaUnit } from "@/lib/types";
 
-const SOIL_TYPES = ["Loamy", "Sandy", "Clay", "Sandy Loam", "Silty", "Black Cotton", "Red Laterite"];
-const IRRIGATION_TYPES = ["Tube Well", "Canal", "Drip", "Sprinkler", "Borewell", "River Lift", "Rainwater"];
-const SEASONS = ["Rabi 2026-27", "Kharif 2026", "Zaid 2026", "Rabi 2027-28"];
+const EMPTY_FORM = { name: "", village: "", district: "", state: "", totalArea: "", areaUnit: "ACRE" as AreaUnit, soilType: "", irrigation: "" };
 
 export default function AddFarmPage() {
   const router = useRouter();
-  const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ name: "", location: "", totalArea: "", soilType: "", irrigation: "", season: "Rabi 2026-27" });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
 
-  const set = (k: string, v: string) => { setForm(f => ({ ...f, [k]: v })); setErrors(e => { const n = { ...e }; delete n[k]; return n; }); };
+  const set = (k: string, v: string) => { setForm(f => ({ ...f, [k]: v })); setErrors(e => { const n = { ...e }; delete n[k]; delete n.form; return n; }); };
 
   const validate = () => {
     const e: Record<string, string> = {};
     if (!form.name.trim()) e.name = "Farm name is required";
-    if (!form.location.trim()) e.location = "Location is required";
-    if (!form.totalArea || isNaN(Number(form.totalArea))) e.totalArea = "Enter valid area";
+    if (!form.district.trim()) e.district = "District is required";
+    if (!form.totalArea || isNaN(Number(form.totalArea)) || Number(form.totalArea) <= 0) e.totalArea = "Enter valid area";
     if (!form.soilType) e.soilType = "Select soil type";
     if (!form.irrigation) e.irrigation = "Select irrigation source";
     return e;
   };
 
-  const handleSubmit = (ev: React.FormEvent) => {
+  const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     const e = validate();
     if (Object.keys(e).length) { setErrors(e); return; }
-    setSubmitted(true);
+    setSaving(true);
+    const result = await createFarmAction({
+      name: form.name.trim(),
+      location: { village: form.village.trim(), district: form.district.trim(), state: form.state.trim() },
+      totalArea: Number(form.totalArea),
+      areaUnit: form.areaUnit,
+      soilType: form.soilType,
+      irrigationType: form.irrigation,
+    });
+    if (result.error !== undefined) {
+      setSaving(false);
+      setErrors({ form: result.error });
+      return;
+    }
+    router.push(`/farms/${result.data.farmId}`);
   };
-
-  if (submitted) return (
-    <div><TopBar title="Add Farm" />
-      <main className="p-4 lg:p-6 max-w-lg mx-auto">
-        <div className="card p-8 text-center">
-          <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 size={32} className="text-primary-600" />
-          </div>
-          <div className="text-4xl mb-2">🌾</div>
-          <h2 className="text-xl font-bold text-gray-800 mb-1">Farm Created!</h2>
-          <p className="text-sm text-gray-500 mb-5"><span className="font-semibold text-primary-700">{form.name}</span> has been added.</p>
-          <div className="bg-gray-50 rounded-xl p-4 text-left space-y-2 mb-6">
-            {[{ l: "Name", v: form.name }, { l: "Location", v: form.location }, { l: "Area", v: `${form.totalArea} Acres` }, { l: "Soil", v: form.soilType }, { l: "Irrigation", v: form.irrigation }, { l: "Season", v: form.season }].map(r => (
-              <div key={r.l} className="flex justify-between text-sm"><span className="text-gray-400">{r.l}</span><span className="font-medium text-gray-700">{r.v}</span></div>
-            ))}
-          </div>
-          <div className="flex gap-3">
-            <button onClick={() => { setSubmitted(false); setForm({ name: "", location: "", totalArea: "", soilType: "", irrigation: "", season: "Rabi 2026-27" }); }} className="btn-secondary flex-1 justify-center">Add Another</button>
-            <Link href="/farms" className="btn-primary flex-1 justify-center">View Farms</Link>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
 
   return (
     <div><TopBar title="Add Farm" />
@@ -73,23 +64,26 @@ export default function AddFarmPage() {
             <input className="input" placeholder="e.g. South Farm, Khet No. 2…" value={form.name} onChange={e => set("name", e.target.value)} />
             {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
           </div>
-          <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Location <span className="text-red-500">*</span></label>
-            <input className="input" placeholder="Village, District, State" value={form.location} onChange={e => set("location", e.target.value)} />
-            {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location}</p>}
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Total Area <span className="text-red-500">*</span></label>
-              <div className="flex gap-1.5">
-                <input type="number" className="input" placeholder="4" value={form.totalArea} onChange={e => set("totalArea", e.target.value)} />
-                <span className="input w-16 text-center bg-gray-50 text-gray-500">Ac</span>
-              </div>
-              {errors.totalArea && <p className="text-red-500 text-xs mt-1">{errors.totalArea}</p>}
+          <div className="grid grid-cols-3 gap-2">
+            <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Village</label>
+              <input className="input" value={form.village} onChange={e => set("village", e.target.value)} />
             </div>
-            <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Season</label>
-              <select className="input" value={form.season} onChange={e => set("season", e.target.value)}>
-                {SEASONS.map(s => <option key={s}>{s}</option>)}
+            <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">District <span className="text-red-500">*</span></label>
+              <input className="input" value={form.district} onChange={e => set("district", e.target.value)} />
+            </div>
+            <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">State</label>
+              <input className="input" value={form.state} onChange={e => set("state", e.target.value)} />
+            </div>
+          </div>
+          {errors.district && <p className="text-red-500 text-xs -mt-3">{errors.district}</p>}
+          <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Total Area <span className="text-red-500">*</span></label>
+            <div className="flex gap-2">
+              <input type="number" step="0.01" min="0.01" className="input" placeholder="4" value={form.totalArea} onChange={e => set("totalArea", e.target.value)} />
+              <select className="input w-32" value={form.areaUnit} onChange={e => set("areaUnit", e.target.value)}>
+                {AREA_UNITS.map(u => <option key={u.value} value={u.value}>{u.label}</option>)}
               </select>
             </div>
+            {errors.totalArea && <p className="text-red-500 text-xs mt-1">{errors.totalArea}</p>}
           </div>
           <div><label className="block text-xs font-semibold text-gray-600 mb-2">Soil type <span className="text-red-500">*</span></label>
             <div className="grid grid-cols-3 gap-2">
@@ -109,7 +103,10 @@ export default function AddFarmPage() {
             </div>
             {errors.irrigation && <p className="text-red-500 text-xs mt-1">{errors.irrigation}</p>}
           </div>
-          <button type="submit" className="btn-primary w-full justify-center py-2.5">Create Farm ✓</button>
+          {errors.form && <p className="bg-red-50 text-red-600 text-sm rounded-lg p-3">{errors.form}</p>}
+          <button type="submit" disabled={saving} className="btn-primary w-full justify-center py-2.5">
+            {saving ? "Creating…" : "Create Farm ✓"}
+          </button>
         </form>
       </main>
     </div>

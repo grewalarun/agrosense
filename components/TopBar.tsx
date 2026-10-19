@@ -1,5 +1,6 @@
 "use client";
 import { Bell, Plus } from "lucide-react";
+import { currentSeasonLabel } from "@/lib/season";
 
 interface TopBarProps {
   title: string;
@@ -7,7 +8,7 @@ interface TopBarProps {
   action?: { label: string; onClick: () => void };
 }
 
-export default function TopBar({ title, season = "Rabi 2026-27", action }: TopBarProps) {
+export default function TopBar({ title, season = currentSeasonLabel(), action }: TopBarProps) {
   return (
     <header className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 lg:px-6 py-3 flex items-center justify-between">
       <h1 className="text-base font-semibold text-gray-800">{title}</h1>

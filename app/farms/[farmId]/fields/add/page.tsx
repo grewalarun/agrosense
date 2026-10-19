@@ -1,33 +1,28 @@
 "use client";
 import { useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import TopBar from "@/components/TopBar";
 import Link from "next/link";
-import { ChevronLeft, MapPin, Droplets, Layers, Ruler, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, MapPin, Layers, CheckCircle2 } from "lucide-react";
+import { createFieldAction } from "@/lib/actions/farms";
+import { AREA_UNITS, IRRIGATION_TYPES, SOIL_TYPES } from "@/lib/format";
+import type { AreaUnit } from "@/lib/types";
 
-const SOIL_TYPES = ["Loamy", "Sandy", "Clay", "Sandy Loam", "Silty", "Clayey Loam", "Black Cotton", "Red Laterite"];
-const IRRIGATION_TYPES = ["Tube Well", "Drip", "Canal", "Sprinkler", "Flood", "Rainwater", "Borewell", "River Lift"];
+const EMPTY_FORM = { name: "", area: "", areaUnit: "ACRE" as AreaUnit, soil: "", irrigation: "", notes: "" };
 
 export default function AddFieldPage() {
-  const router = useRouter();
   const params = useParams();
   const farmId = params.farmId as string;
 
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    area: "",
-    areaUnit: "Acre",
-    soil: "",
-    irrigation: "",
-    notes: "",
-  });
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const set = (k: string, v: string) => {
     setForm(f => ({ ...f, [k]: v }));
-    setErrors(e => { const n = { ...e }; delete n[k]; return n; });
+    setErrors(e => { const n = { ...e }; delete n[k]; delete n.form; return n; });
   };
 
   const validateStep1 = () => {
@@ -51,12 +46,25 @@ export default function AddFieldPage() {
     setStep(2);
   };
 
-  const handleSubmit = (ev: React.FormEvent) => {
+  const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     const e = validateStep2();
     if (Object.keys(e).length) { setErrors(e); return; }
+    setSaving(true);
+    const result = await createFieldAction(farmId, {
+      name: form.name.trim(),
+      area: Number(form.area),
+      areaUnit: form.areaUnit,
+      soilType: form.soil,
+      irrigationType: form.irrigation,
+      notes: form.notes.trim() || undefined,
+    });
+    setSaving(false);
+    if (result.error !== undefined) { setErrors({ form: result.error }); return; }
     setSubmitted(true);
   };
+
+  const unitLabel = AREA_UNITS.find(u => u.value === form.areaUnit)?.label;
 
   if (submitted) {
     return (
@@ -73,7 +81,7 @@ export default function AddFieldPage() {
             </p>
             <div className="bg-gray-50 rounded-xl p-4 text-left space-y-2 mb-6 mt-4">
               {[
-                { label: "Area", value: `${form.area} ${form.areaUnit}` },
+                { label: "Area", value: `${form.area} ${unitLabel}` },
                 { label: "Soil Type", value: form.soil },
                 { label: "Irrigation", value: form.irrigation },
                 ...(form.notes ? [{ label: "Notes", value: form.notes }] : []),
@@ -86,7 +94,7 @@ export default function AddFieldPage() {
             </div>
             <div className="flex gap-3">
               <button
-                onClick={() => { setSubmitted(false); setStep(1); setForm({ name: "", area: "", areaUnit: "Acre", soil: "", irrigation: "", notes: "" }); }}
+                onClick={() => { setSubmitted(false); setStep(1); setForm(EMPTY_FORM); }}
                 className="btn-secondary flex-1 justify-center">
                 Add Another
               </button>
@@ -172,10 +180,7 @@ export default function AddFieldPage() {
                     value={form.areaUnit}
                     onChange={e => set("areaUnit", e.target.value)}
                   >
-                    <option>Acre</option>
-                    <option>Hectare</option>
-                    <option>Bigha</option>
-                    <option>Kanal</option>
+                    {AREA_UNITS.map(u => <option key={u.value} value={u.value}>{u.label}</option>)}
                   </select>
                 </div>
                 {errors.area && <p className="text-red-500 text-xs mt-1">{errors.area}</p>}
@@ -273,7 +278,7 @@ export default function AddFieldPage() {
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-gray-500">Area</span>
-                      <span className="font-semibold text-gray-700">{form.area} {form.areaUnit}</span>
+                      <span className="font-semibold text-gray-700">{form.area} {unitLabel}</span>
                     </div>
                     {form.soil && (
                       <div className="flex justify-between text-xs">
@@ -291,12 +296,14 @@ export default function AddFieldPage() {
                 </div>
               )}
 
+              {errors.form && <p className="bg-red-50 text-red-600 text-sm rounded-lg p-3">{errors.form}</p>}
+
               <div className="flex gap-3 pt-1">
                 <button type="button" onClick={() => setStep(1)} className="btn-secondary flex-1 justify-center">
                   ← Back
                 </button>
-                <button type="submit" className="btn-primary flex-1 justify-center py-2.5">
-                  Add Field ✓
+                <button type="submit" disabled={saving} className="btn-primary flex-1 justify-center py-2.5">
+                  {saving ? "Saving…" : "Add Field ✓"}
                 </button>
               </div>
             </div>

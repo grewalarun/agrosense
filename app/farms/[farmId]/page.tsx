@@ -1,16 +1,12 @@
-'use client';
-import { useParams } from "next/navigation";
-import { FARMS, getActiveCycle, getLastClosedCycle, getCyclePL, fmt } from "@/lib/data";
 import TopBar from "@/components/TopBar";
 import Link from "next/link";
 import { Droplets, Layers, MapPin, Plus, ChevronRight } from "lucide-react";
+import { getFarmReport } from "@/lib/api/farms";
+import { fmt, formatArea, formatLocation } from "@/lib/format";
 
-export default function FarmDetailPage() {
-  const params = useParams();
-  const farmId = params.farmId as string;
-
-  const farm = FARMS.find(f => f.id === farmId);
-  if (!farm) return <div className="p-8 text-center text-gray-400">Farm not found.</div>;
+export default async function FarmDetailPage(props: PageProps<"/farms/[farmId]">) {
+  const { farmId } = await props.params;
+  const { farm, fields, activeInvestment, totals } = await getFarmReport(farmId);
 
   return (
     <div>
@@ -22,15 +18,17 @@ export default function FarmDetailPage() {
             <span className="text-2xl">🌾</span>
             <div>
               <h2 className="font-bold text-gray-800">{farm.name}</h2>
-              <p className="text-xs text-gray-500 flex items-center gap-1"><MapPin size={11} /> {farm.location}</p>
+              {formatLocation(farm.location) && (
+                <p className="text-xs text-gray-500 flex items-center gap-1"><MapPin size={11} /> {formatLocation(farm.location)}</p>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Total Area", value: `${farm.totalArea} Acres` },
-              { label: "Irrigation", value: farm.irrigation, icon: <Droplets size={12} /> },
-              { label: "Soil Type", value: farm.soilType, icon: <Layers size={12} /> },
-              { label: "Season", value: farm.season },
+              { label: "Total Area", value: formatArea(farm.totalArea, farm.areaUnit, true) },
+              { label: "Irrigation", value: farm.irrigationType || "—", icon: <Droplets size={12} /> },
+              { label: "Soil Type", value: farm.soilType || "—", icon: <Layers size={12} /> },
+              { label: "All-time profit", value: `${totals.profit < 0 ? "-" : ""}${fmt(totals.profit)}` },
             ].map(item => (
               <div key={item.label} className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400 flex items-center gap-1">{item.icon}{item.label}</p>
@@ -38,6 +36,9 @@ export default function FarmDetailPage() {
               </div>
             ))}
           </div>
+          {activeInvestment > 0 && (
+            <p className="text-xs text-amber-600 mt-3">{fmt(activeInvestment)} invested in crops currently growing</p>
+          )}
         </div>
 
         {/* Fields with live P&L from cycles */}
@@ -48,47 +49,48 @@ export default function FarmDetailPage() {
               <Plus size={13} /> Add Field
             </Link>
           </div>
+          {fields.length === 0 && (
+            <div className="card p-6 text-center text-sm text-gray-400">No fields yet. Add your first field to start tracking crops.</div>
+          )}
           <div className="grid sm:grid-cols-2 gap-3">
-            {farm.fields.map(field => {
-              const active = getActiveCycle(field.id);
-              const lastClosed = getLastClosedCycle(field.id);
-              const activePL = active ? getCyclePL(active.id) : null;
-              const lastPL = lastClosed ? getCyclePL(lastClosed.id) : null;
-              return (
-                <Link key={field.id} href={`/farms/${farmId}/fields/${field.id}`}
-                  className="card p-4 hover:border-primary-200 hover:shadow-sm transition-all block">
+            {fields.map(({ field, activeCycle, lastCompletedCycle }) => (
+              <div key={field._id} className="card p-4 hover:border-primary-200 hover:shadow-sm transition-all">
+                <Link href={`/farms/${farmId}/fields/${field._id}`} className="block">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-base ${field.status === "Active" ? "bg-primary-100" : "bg-gray-100"}`}>
-                        {field.status === "Active" ? "🌱" : "⬜"}
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-base ${activeCycle ? "bg-primary-100" : "bg-gray-100"}`}>
+                        {activeCycle ? "🌱" : "⬜"}
                       </div>
                       <p className="font-medium text-gray-800 text-sm">{field.name}</p>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className={field.status === "Active" ? "badge-active" : "badge-empty"}>{field.status}</span>
+                      <span className={activeCycle ? "badge-active" : "badge-empty"}>{activeCycle ? "Active" : "Empty"}</span>
                       <ChevronRight size={13} className="text-gray-300" />
                     </div>
                   </div>
-                  <p className="text-xs text-gray-400 mb-2">{field.area}Ac · {field.soil} · {field.irrigation}</p>
-                  {active && (
-                    <p className="text-xs font-semibold text-amber-600 mb-1">🌱 {active.crop} · {activePL ? fmt(activePL.expenses) : "—"} invested</p>
+                  <p className="text-xs text-gray-400 mb-2">
+                    {[formatArea(field.area, field.areaUnit), field.soilType, field.irrigationType].filter(Boolean).join(" · ")}
+                  </p>
+                  {activeCycle && (
+                    <p className="text-xs font-semibold text-amber-600 mb-1">🌱 {activeCycle.crop?.name} · {fmt(activeCycle.expenses)} invested</p>
                   )}
-                  {lastClosed && lastPL && (
+                  {lastCompletedCycle && (
                     <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-gray-400">Last: {lastClosed.crop}</span>
-                      <span className="text-sm font-bold text-primary-600">{fmt(lastPL.profit)} profit</span>
+                      <span className="text-xs text-gray-400">Last: {lastCompletedCycle.crop?.name} · {lastCompletedCycle.season}</span>
+                      <span className={`text-sm font-bold ${lastCompletedCycle.profit >= 0 ? "text-primary-600" : "text-red-600"}`}>
+                        {lastCompletedCycle.profit < 0 && "-"}{fmt(lastCompletedCycle.profit)} {lastCompletedCycle.profit >= 0 ? "profit" : "loss"}
+                      </span>
                     </div>
                   )}
-                  {field.status === "Empty" && (
-                    <Link href={`/farms/${farmId}/crop-cycles/add`}
-                      onClick={e => e.stopPropagation()}
-                      className="mt-2 block w-full btn-primary py-1.5 text-xs justify-center">
-                      + Plant a Crop
-                    </Link>
-                  )}
                 </Link>
-              );
-            })}
+                {!activeCycle && (
+                  <Link href={`/farms/${farmId}/crop-cycles/add?fieldId=${field._id}`}
+                    className="mt-2 w-full btn-primary py-1.5 text-xs justify-center">
+                    + Plant a Crop
+                  </Link>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
