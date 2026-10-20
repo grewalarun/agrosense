@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import TopBar from "@/components/TopBar";
-import { User, Shield, Globe, HelpCircle, ChevronRight, Phone, Mail } from "lucide-react";
+import { User, Shield, Globe, HelpCircle, ChevronRight, Phone, Mail, Send } from "lucide-react";
 import { getMe } from "@/lib/api/account";
 import { getFormatters } from "@/i18n/server";
 import { LOCALE_NAMES } from "@/i18n/config";
@@ -28,6 +28,7 @@ export default async function SettingsPage() {
       title: t("support"),
       items: [
         { href: "/settings/help", icon: HelpCircle, label: t("help"), desc: t("helpDesc"), color: "bg-gray-100 text-gray-600" },
+        { href: "/settings/email-test", icon: Send, label: t("emailTest"), desc: t("emailTestDesc"), color: "bg-amber-100 text-amber-700" },
       ],
     },
   ];
