@@ -1,4 +1,8 @@
+import { getTranslations } from "next-intl/server";
 import TopBar from "@/components/TopBar";
+import type messages from "@/messages/en.json";
+
+type IntlMessages = typeof messages;
 
 // Building blocks for loading.tsx screens: shimmering placeholders shaped like
 // the page that is about to appear, so the layout doesn't jump when data arrives.
@@ -7,12 +11,16 @@ export function Bone({ className = "", style }: { className?: string; style?: Re
   return <div className={`skeleton ${className}`} style={style} aria-hidden />;
 }
 
-export function PageSkeleton({ title, children, narrow }: { title: string; children: React.ReactNode; narrow?: boolean }) {
+type LoadingKey = keyof IntlMessages["loading"];
+
+export async function PageSkeleton({ titleKey, children, narrow }: { titleKey: LoadingKey; children: React.ReactNode; narrow?: boolean }) {
+  const [t, tl] = await Promise.all([getTranslations("common"), getTranslations("loading")]);
+  const title = tl(titleKey);
   return (
     <div aria-busy="true" aria-live="polite">
       <TopBar title={title} />
       <main className={`p-4 lg:p-6 space-y-5 ${narrow ? "max-w-2xl" : ""}`}>
-        <span className="sr-only">Loading {title.toLowerCase()}…</span>
+        <span className="sr-only">{t("loadingTitle", { title: title.toLowerCase() })}</span>
         {children}
       </main>
     </div>

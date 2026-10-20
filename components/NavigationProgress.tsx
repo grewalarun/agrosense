@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 // Slim bar at the top of the screen from the moment an internal link is clicked
 // until the new page's URL is in place.
@@ -8,6 +9,7 @@ export default function NavigationProgress() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const url = `${pathname}?${searchParams.toString()}`;
+  const t = useTranslations("common");
   // URL the user was on when they clicked; the bar runs while we're still on it
   const [startedOn, setStartedOn] = useState<string | null>(null);
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -31,5 +33,5 @@ export default function NavigationProgress() {
   }, []);
 
   if (startedOn === null) return null;
-  return <div className="nav-progress" data-state={startedOn === url ? "loading" : "done"} role="progressbar" aria-label="Loading page" />;
+  return <div className="nav-progress" data-state={startedOn === url ? "loading" : "done"} role="progressbar" aria-label={t("loadingPage")} />;
 }

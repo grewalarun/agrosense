@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { CHART } from "./colors";
 import { fmt, signedFmt } from "@/lib/format";
 
@@ -12,6 +13,7 @@ const BAR = 24;
 // Oldest on the left; the latest value and the hovered/focused column are labelled.
 export default function ProfitColumns({ points }: { points: ProfitPoint[] }) {
   const [active, setActive] = useState<number | null>(null);
+  const t = useTranslations("common");
   if (points.length === 0) return null;
 
   const max = Math.max(...points.map(p => p.profit), 0);
@@ -25,11 +27,11 @@ export default function ProfitColumns({ points }: { points: ProfitPoint[] }) {
     <div>
       <div className="flex items-baseline justify-between mb-2 min-h-[2.5rem]">
         <div>
-          <p className="text-xs text-gray-500">{point.label}{active === null && points.length > 1 ? " (latest)" : ""}</p>
+          <p className="text-xs text-gray-500">{point.label}{active === null && points.length > 1 ? ` ${t("latest")}` : ""}</p>
           <p className="text-lg font-bold text-gray-800">{signedFmt(point.profit)}</p>
         </div>
         <p className="text-xs text-gray-500 text-right">
-          Revenue {fmt(point.revenue)}<br />Expenses {fmt(point.expenses)}
+          {t("revenueAmount", { amount: fmt(point.revenue) })}<br />{t("expensesAmount", { amount: fmt(point.expenses) })}
         </p>
       </div>
       <div className="relative" style={{ height: HEIGHT }} onMouseLeave={() => setActive(null)}>
@@ -42,7 +44,7 @@ export default function ProfitColumns({ points }: { points: ProfitPoint[] }) {
               <button key={p.label} type="button"
                 className="relative flex-1 outline-none focus-visible:bg-gray-100 rounded"
                 onMouseEnter={() => setActive(i)} onFocus={() => setActive(i)} onBlur={() => setActive(null)}
-                aria-label={`${p.label}: ${signedFmt(p.profit)} (revenue ${fmt(p.revenue)}, expenses ${fmt(p.expenses)})`}>
+                aria-label={t("chartPointLabel", { label: p.label, profit: signedFmt(p.profit), revenue: fmt(p.revenue), expenses: fmt(p.expenses) })}>
                 <span className="absolute left-1/2 -translate-x-1/2 transition-opacity"
                   style={{
                     width: BAR,

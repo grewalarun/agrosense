@@ -1,25 +1,29 @@
 import Link from "next/link";
 import CropPicker from "@/components/CropPicker";
 import { getCycleRows } from "@/lib/api/cycles";
-import { formatDate, unitLabel } from "@/lib/format";
+import { getTranslations } from "next-intl/server";
+import { cropEmoji } from "@/lib/crops";
+import { getFormatters } from "@/i18n/server";
 
 export default async function AddHarvestPage(props: PageProps<"/farms/[farmId]/harvests/add">) {
   const { farmId } = await props.params;
-  const { cycles } = await getCycleRows(farmId);
+  const [{ cycles }, t, f] = await Promise.all([getCycleRows(farmId), getTranslations("harvests"), getFormatters()]);
   const growing = cycles.filter(c => c.status === "ACTIVE" && c.field);
 
   return (
     <CropPicker
-      title="Record Harvest"
-      intro="Which crop are you harvesting?"
+      title={t("pickTitle")}
+      intro={t("pickIntro")}
       backHref={`/farms/${farmId}/harvests`}
       items={growing.map(c => ({
         href: `/farms/${farmId}/fields/${c.field!._id}/harvest?cycleId=${c.cycleId}`,
-        crop: c.crop?.name ?? "Crop",
+        crop: f.crop(c.crop?.name ?? "Crop"),
+        emoji: cropEmoji(c.crop?.name),
         field: c.field!.name,
-        detail: `${c.season} · sown ${formatDate(c.startDate)}${c.actualYield > 0 ? ` · ${c.actualYield} ${unitLabel(c.yieldUnit)} harvested so far` : ""}`,
+        detail: t("pickDetail", { season: f.season(c.seasonType, c.seasonYear), date: f.date(c.startDate) })
+          + (c.actualYield > 0 ? t("pickSoFar", { qty: c.actualYield, unit: f.unit(c.yieldUnit) }) : ""),
       }))}
-      empty={<>No crops are growing on this farm. <Link href={`/farms/${farmId}/crop-cycles/add`} className="text-primary-600 underline">Plant a crop</Link> first.</>}
+      empty={t.rich("pickEmpty", { link: chunks => <Link href={`/farms/${farmId}/crop-cycles/add`} className="text-primary-600 underline">{chunks}</Link> })}
     />
   );
 }

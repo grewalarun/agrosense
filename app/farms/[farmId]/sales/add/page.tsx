@@ -1,10 +1,12 @@
 import CropPicker from "@/components/CropPicker";
 import { getCycleRows } from "@/lib/api/cycles";
-import { unitLabel } from "@/lib/format";
+import { getTranslations } from "next-intl/server";
+import { cropEmoji } from "@/lib/crops";
+import { getFormatters } from "@/i18n/server";
 
 export default async function AddSalePage(props: PageProps<"/farms/[farmId]/sales/add">) {
   const { farmId } = await props.params;
-  const { cycles } = await getCycleRows(farmId);
+  const [{ cycles }, t, f] = await Promise.all([getCycleRows(farmId), getTranslations("sales"), getFormatters()]);
   // Sales come out of harvested stock, so only crops with unsold stock can be sold
   const withStock = cycles
     .filter(c => c.status !== "CLOSED" && c.field)
@@ -13,16 +15,17 @@ export default async function AddSalePage(props: PageProps<"/farms/[farmId]/sale
 
   return (
     <CropPicker
-      title="Record Sale"
-      intro="Which crop are you selling?"
+      title={t("pickTitle")}
+      intro={t("pickIntro")}
       backHref={`/farms/${farmId}/sales`}
       items={withStock.map(({ cycle: c, remaining }) => ({
         href: `/farms/${farmId}/fields/${c.field!._id}/harvest?cycleId=${c.cycleId}&sell=1`,
-        crop: c.crop?.name ?? "Crop",
+        crop: f.crop(c.crop?.name ?? "Crop"),
+        emoji: cropEmoji(c.crop?.name),
         field: c.field!.name,
-        detail: `${c.season} · ${remaining} ${unitLabel(c.yieldUnit)} unsold`,
+        detail: t("pickDetail", { season: f.season(c.seasonType, c.seasonYear), qty: remaining, unit: f.unit(c.yieldUnit) }),
       }))}
-      empty="No unsold stock. Record a harvest first — sales are made from harvested stock."
+      empty={t("pickEmpty")}
     />
   );
 }

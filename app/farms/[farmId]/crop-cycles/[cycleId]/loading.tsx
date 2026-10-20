@@ -2,7 +2,7 @@ import { PageSkeleton, PanelSkeleton, StatCardsSkeleton } from "@/components/Ske
 
 export default function Loading() {
   return (
-    <PageSkeleton title="Crop" narrow>
+    <PageSkeleton titleKey="crop" narrow>
       <PanelSkeleton lines={3} />
       <StatCardsSkeleton />
       <PanelSkeleton lines={6} />

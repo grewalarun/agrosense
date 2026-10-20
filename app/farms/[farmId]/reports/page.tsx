@@ -7,7 +7,10 @@ import { TrendingUp, TrendingDown, BarChart2, Wheat, Award, Star, Clock } from "
 import { getFarm } from "@/lib/api/farms";
 import { getAllCycleRows, getSeason, getSeasons } from "@/lib/api/reports";
 import { cropEmoji } from "@/lib/crops";
-import { CYCLE_STATUS, areaUnitShort, categoryLabel, fmt, signedFmt, unitLabel } from "@/lib/format";
+import { getTranslations } from "next-intl/server";
+import { CYCLE_STATUS, fmt, signedFmt } from "@/lib/format";
+import { getFormatters } from "@/i18n/server";
+import type { Formatters } from "@/i18n/format";
 import type { CycleRow, ExpenseCategory, ReportTotals } from "@/lib/types";
 
 const DONE = ["HARVESTED", "CLOSED"];
@@ -25,11 +28,11 @@ function byCropFromRows(rows: CycleRow[]) {
 }
 
 // Profit per area of each field over harvested crops, in the field's own unit
-function fieldPerformance(rows: CycleRow[]) {
+function fieldPerformance(rows: CycleRow[], fm: Formatters) {
   const groups = new Map<string, { name: string; area: number; unit: string; profit: number; crops: number }>();
   for (const r of rows.filter(r => DONE.includes(r.status) && r.field)) {
     const f = r.field!;
-    const g = groups.get(f._id) ?? { name: f.name, area: f.area, unit: areaUnitShort(f.areaUnit), profit: 0, crops: 0 };
+    const g = groups.get(f._id) ?? { name: f.name, area: f.area, unit: fm.areaUnit(f.areaUnit), profit: 0, crops: 0 };
     g.profit += r.profit; g.crops++;
     groups.set(f._id, g);
   }
@@ -41,7 +44,9 @@ function fieldPerformance(rows: CycleRow[]) {
 export default async function ReportsPage(props: PageProps<"/farms/[farmId]/reports">) {
   const { farmId } = await props.params;
   const { season: seasonParam } = await props.searchParams;
-  const [farm, { seasons, totals: allTotals }] = await Promise.all([getFarm(farmId), getSeasons(farmId)]);
+  const [farm, { seasons, totals: allTotals }, t, fm] = await Promise.all([
+    getFarm(farmId), getSeasons(farmId), getTranslations("reports"), getFormatters(),
+  ]);
 
   const selected = seasons.find(s => seasonKey(s) === seasonParam);
   let rows: CycleRow[];
@@ -60,18 +65,18 @@ export default async function ReportsPage(props: PageProps<"/farms/[farmId]/repo
   const growingSpend = growing.reduce((sum, r) => sum + r.expenses, 0);
   const crops = byCropFromRows(rows);
   const bestCrop = byCropFromRows(rows.filter(r => DONE.includes(r.status)))[0];
-  const fields = fieldPerformance(rows);
+  const fields = fieldPerformance(rows, fm);
   const categories = (Object.entries(totals.expensesByCategory) as [ExpenseCategory, number][]).sort((a, b) => b[1] - a[1]);
-  const seasonPoints = [...seasons].reverse().slice(-8).map(s => ({ label: s.season, profit: s.profit, revenue: s.revenue, expenses: s.expenses }));
+  const seasonPoints = [...seasons].reverse().slice(-8).map(s => ({ label: fm.season(s.seasonType, s.seasonYear), profit: s.profit, revenue: s.revenue, expenses: s.expenses }));
 
   return (
     <div>
-      <TopBar title="Reports" />
+      <TopBar title={t("title")} />
       <main className="p-4 lg:p-6 space-y-5">
 
         {/* Season filter */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1">
-          {[{ key: undefined, label: "All seasons" }, ...seasons.map(s => ({ key: seasonKey(s), label: s.season }))].map(s => (
+          {[{ key: undefined, label: t("allSeasons") }, ...seasons.map(s => ({ key: seasonKey(s), label: fm.season(s.seasonType, s.seasonYear) }))].map(s => (
             <Link key={s.label} href={s.key ? `/farms/${farmId}/reports?season=${s.key}` : `/farms/${farmId}/reports`}
               className={`text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium border transition-colors ${s.key === seasonKey(selected ?? { seasonType: "", seasonYear: "" }) || (!s.key && !selected) ? "bg-primary-600 text-white border-primary-600" : "bg-white border-gray-200 text-gray-600 hover:border-primary-300"}`}>
               {s.label}
@@ -82,21 +87,21 @@ export default async function ReportsPage(props: PageProps<"/farms/[farmId]/repo
         {rows.length === 0 ? (
           <div className="card p-10 text-center">
             <div className="text-4xl mb-2">📊</div>
-            <p className="text-sm text-gray-500">No crops recorded on {farm.name} yet. Reports appear once you plant a crop and record expenses or sales.</p>
+            <p className="text-sm text-gray-500">{t("noData", { farm: farm.name })}</p>
           </div>
         ) : (
           <>
             {/* Top-line P&L */}
             <div className="card p-5">
               <h3 className="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <BarChart2 size={16} className="text-primary-600" /> {selected ? selected.season : `${farm.name} · all seasons`}
+                <BarChart2 size={16} className="text-primary-600" /> {selected ? fm.season(selected.seasonType, selected.seasonYear) : t("farmAllSeasons", { farm: farm.name })}
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  { label: "Revenue", value: fmt(totals.revenue), Icon: TrendingUp, tone: "text-primary-700" },
-                  { label: "Expenses", value: fmt(totals.expenses), Icon: TrendingDown, tone: "text-gray-800" },
-                  { label: "Net profit", value: signedFmt(totals.profit), Icon: totals.profit >= 0 ? TrendingUp : TrendingDown, tone: totals.profit >= 0 ? "text-primary-700" : "text-red-600" },
-                  { label: "Return on cost", value: roi === null ? "—" : `${roi}%`, Icon: BarChart2, tone: "text-gray-800" },
+                  { label: t("revenue"), value: fmt(totals.revenue), Icon: TrendingUp, tone: "text-primary-700" },
+                  { label: t("expenses"), value: fmt(totals.expenses), Icon: TrendingDown, tone: "text-gray-800" },
+                  { label: t("netProfit"), value: signedFmt(totals.profit), Icon: totals.profit >= 0 ? TrendingUp : TrendingDown, tone: totals.profit >= 0 ? "text-primary-700" : "text-red-600" },
+                  { label: t("returnOnCost"), value: roi === null ? "—" : `${roi}%`, Icon: BarChart2, tone: "text-gray-800" },
                 ].map(item => (
                   <div key={item.label} className="bg-gray-50 border border-gray-100 rounded-xl p-3">
                     <item.Icon size={14} className="text-gray-400" />
@@ -106,11 +111,11 @@ export default async function ReportsPage(props: PageProps<"/farms/[farmId]/repo
                 ))}
               </div>
               {totals.profitPerArea !== null && totals.areaUnit && (
-                <p className="text-xs text-gray-500 mt-3">{signedFmt(totals.profitPerArea)} per {areaUnitShort(totals.areaUnit)} over {totals.area} {areaUnitShort(totals.areaUnit)} cultivated</p>
+                <p className="text-xs text-gray-500 mt-3">{t("perAreaLine", { amount: signedFmt(totals.profitPerArea), unit: fm.areaUnit(totals.areaUnit), area: totals.area ?? 0 })}</p>
               )}
               {growing.length > 0 && (
                 <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-2.5 mt-3 flex items-center gap-1.5">
-                  <Clock size={12} /> Includes {growing.length} crop{growing.length > 1 ? "s" : ""} not yet harvested ({fmt(growingSpend)} spent so far) — profit rises as they are sold.
+                  <Clock size={12} /> {t("growingNote", { count: growing.length, amount: fmt(growingSpend) })}
                 </p>
               )}
             </div>
@@ -118,7 +123,7 @@ export default async function ReportsPage(props: PageProps<"/farms/[farmId]/repo
             {/* Profit by season */}
             {!selected && seasonPoints.length > 1 && (
               <div className="card p-5">
-                <h3 className="text-sm font-semibold text-gray-800 mb-3">Profit by season</h3>
+                <h3 className="text-sm font-semibold text-gray-800 mb-3">{t("profitBySeason")}</h3>
                 <ProfitColumns points={seasonPoints} />
               </div>
             )}
@@ -129,9 +134,9 @@ export default async function ReportsPage(props: PageProps<"/farms/[farmId]/repo
                   <Star size={18} className="text-amber-600" />
                 </div>
                 <div>
-                  <p className="text-xs text-amber-700 font-semibold">Most profitable crop{selected ? " this season" : ""}</p>
+                  <p className="text-xs text-amber-700 font-semibold">{selected ? t("mostProfitableSeason") : t("mostProfitable")}</p>
                   <p className="text-sm font-bold text-amber-900">
-                    {cropEmoji(bestCrop.crop)} {bestCrop.crop} — {signedFmt(bestCrop.profit)} over {bestCrop.cycles} harvest{bestCrop.cycles > 1 ? "s" : ""}
+                    {cropEmoji(bestCrop.crop)} {t("bestCropLine", { crop: fm.crop(bestCrop.crop), profit: signedFmt(bestCrop.profit), count: bestCrop.cycles })}
                   </p>
                 </div>
               </div>
@@ -141,14 +146,14 @@ export default async function ReportsPage(props: PageProps<"/farms/[farmId]/repo
             <div className="card overflow-hidden">
               <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
                 <Wheat size={15} className="text-primary-600" />
-                <h3 className="text-sm font-semibold text-gray-800">Crop-wise P&amp;L</h3>
+                <h3 className="text-sm font-semibold text-gray-800">{t("cropWise")}</h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50">
                     <tr>
-                      {["Crop", "Field", "Season", "Yield", "Expenses", "Revenue", "Profit", "Per area"].map(h => (
-                        <th key={h} className={`text-xs font-semibold text-gray-500 px-4 py-3 whitespace-nowrap ${["Expenses", "Revenue", "Profit", "Per area", "Yield"].includes(h) ? "text-right" : "text-left"}`}>{h}</th>
+                      {(["crop", "field", "season", "yield", "expenses", "revenue", "profit", "perArea"] as const).map(h => (
+                        <th key={h} className={`text-xs font-semibold text-gray-500 px-4 py-3 whitespace-nowrap ${["expenses", "revenue", "profit", "perArea", "yield"].includes(h) ? "text-right" : "text-left"}`}>{t(`cols.${h}`)}</th>
                       ))}
                     </tr>
                   </thead>
@@ -157,27 +162,27 @@ export default async function ReportsPage(props: PageProps<"/farms/[farmId]/repo
                       <tr key={r.cycleId} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                         <td className="px-4 py-3">
                           <Link href={`/farms/${farmId}/crop-cycles/${r.cycleId}`} className="font-medium text-gray-800 text-xs hover:text-primary-700">
-                            {cropEmoji(r.crop?.name)} {r.crop?.name}
+                            {cropEmoji(r.crop?.name)} {fm.crop(r.crop?.name)}
                           </Link>
-                          <span className={`ml-2 ${CYCLE_STATUS[r.status].badge}`}>{CYCLE_STATUS[r.status].label}</span>
+                          <span className={`ml-2 ${CYCLE_STATUS[r.status].badge}`}>{fm.status(r.status)}</span>
                         </td>
                         <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap">{r.field?.name ?? "—"}</td>
-                        <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap">{r.season}</td>
-                        <td className="px-4 py-3 text-right text-xs text-gray-600 whitespace-nowrap tabular-nums">{r.actualYield > 0 ? `${r.actualYield} ${unitLabel(r.yieldUnit)}` : "—"}</td>
+                        <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap">{fm.season(r.seasonType, r.seasonYear)}</td>
+                        <td className="px-4 py-3 text-right text-xs text-gray-600 whitespace-nowrap tabular-nums">{r.actualYield > 0 ? `${r.actualYield} ${fm.unit(r.yieldUnit)}` : "—"}</td>
                         <td className="px-4 py-3 text-right text-xs text-gray-700 tabular-nums">{fmt(r.expenses)}</td>
                         <td className="px-4 py-3 text-right text-xs text-gray-700 tabular-nums">{r.revenue > 0 ? fmt(r.revenue) : "—"}</td>
                         <td className="px-4 py-3 text-right tabular-nums">
                           <span className={`text-xs font-bold ${r.profit >= 0 ? "text-primary-700" : "text-red-600"}`}>{signedFmt(r.profit)}</span>
                         </td>
                         <td className="px-4 py-3 text-right text-xs text-gray-600 whitespace-nowrap tabular-nums">
-                          {r.profitPerArea !== null && r.field && DONE.includes(r.status) ? `${signedFmt(r.profitPerArea)}/${areaUnitShort(r.field.areaUnit)}` : "—"}
+                          {r.profitPerArea !== null && r.field && DONE.includes(r.status) ? `${signedFmt(r.profitPerArea)}/${fm.areaUnit(r.field.areaUnit)}` : "—"}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot className="bg-gray-50">
                     <tr>
-                      <td colSpan={4} className="px-4 py-3 text-xs font-semibold text-gray-600">Total · {rows.length} crop{rows.length > 1 ? "s" : ""}</td>
+                      <td colSpan={4} className="px-4 py-3 text-xs font-semibold text-gray-600">{t("totalRow", { count: rows.length })}</td>
                       <td className="px-4 py-3 text-right text-xs font-bold text-gray-800 tabular-nums">{fmt(totals.expenses)}</td>
                       <td className="px-4 py-3 text-right text-xs font-bold text-gray-800 tabular-nums">{fmt(totals.revenue)}</td>
                       <td className={`px-4 py-3 text-right text-xs font-bold tabular-nums ${totals.profit >= 0 ? "text-primary-700" : "text-red-600"}`}>{signedFmt(totals.profit)}</td>
@@ -190,22 +195,22 @@ export default async function ReportsPage(props: PageProps<"/farms/[farmId]/repo
 
             <div className="grid lg:grid-cols-2 gap-4">
               <div className="card p-4">
-                <h3 className="text-sm font-semibold text-gray-800 mb-4">Profit by crop</h3>
+                <h3 className="text-sm font-semibold text-gray-800 mb-4">{t("profitByCrop")}</h3>
                 <BarList items={crops.map(c => ({
-                  label: `${cropEmoji(c.crop)} ${c.crop}`,
-                  sub: `${c.cycles} crop${c.cycles > 1 ? "s" : ""}`,
+                  label: `${cropEmoji(c.crop)} ${fm.crop(c.crop)}`,
+                  sub: t("cropCount", { count: c.cycles }),
                   value: c.profit,
                   display: signedFmt(c.profit),
                 }))} />
               </div>
 
               <div className="card p-4">
-                <h3 className="text-sm font-semibold text-gray-800 mb-4">Expenses by category</h3>
+                <h3 className="text-sm font-semibold text-gray-800 mb-4">{t("expensesByCategory")}</h3>
                 {categories.length === 0 ? (
-                  <p className="text-xs text-gray-400 text-center py-6">No expenses recorded</p>
+                  <p className="text-xs text-gray-400 text-center py-6">{t("noExpenses")}</p>
                 ) : (
                   <BarList color={CHART.loss} items={categories.map(([cat, amount]) => ({
-                    label: categoryLabel(cat),
+                    label: fm.category(cat),
                     value: amount,
                     display: `${fmt(amount)} · ${Math.round((amount / totals.expenses) * 100)}%`,
                   }))} />
@@ -216,12 +221,12 @@ export default async function ReportsPage(props: PageProps<"/farms/[farmId]/repo
             {fields.length > 0 && (
               <div className="card p-4">
                 <h3 className="text-sm font-semibold text-gray-800 mb-1 flex items-center gap-2">
-                  <Award size={15} className="text-primary-600" /> Field performance
+                  <Award size={15} className="text-primary-600" /> {t("fieldPerformance")}
                 </h3>
-                <p className="text-xs text-gray-400 mb-4">Profit per unit of area from harvested crops</p>
+                <p className="text-xs text-gray-400 mb-4">{t("fieldPerformanceHint")}</p>
                 <BarList items={fields.map(f => ({
                   label: f.name,
-                  sub: `${f.area} ${f.unit} · ${f.crops} harvest${f.crops > 1 ? "s" : ""}`,
+                  sub: t("fieldSub", { area: f.area, unit: f.unit, count: f.crops }),
                   value: f.perArea,
                   display: `${signedFmt(f.perArea)}/${f.unit}`,
                 }))} />

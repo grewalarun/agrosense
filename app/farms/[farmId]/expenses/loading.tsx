@@ -2,7 +2,7 @@ import { ChipsSkeleton, PageSkeleton, StatCardsSkeleton, TableSkeleton } from "@
 
 export default function Loading() {
   return (
-    <PageSkeleton title="Expenses">
+    <PageSkeleton titleKey="expenses">
       <StatCardsSkeleton />
       <ChipsSkeleton count={7} />
       <TableSkeleton rows={6} cols={5} />

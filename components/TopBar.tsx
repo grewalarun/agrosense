@@ -1,6 +1,7 @@
 "use client";
 import { Bell, Plus } from "lucide-react";
-import { currentSeasonLabel } from "@/lib/season";
+import { currentSeasonType, getSeasonYear } from "@/lib/season";
+import { useFormatters } from "@/i18n/client";
 
 interface TopBarProps {
   title: string;
@@ -8,13 +9,17 @@ interface TopBarProps {
   action?: { label: string; onClick: () => void };
 }
 
-export default function TopBar({ title, season = currentSeasonLabel(), action }: TopBarProps) {
+export default function TopBar({ title, season, action }: TopBarProps) {
+  const f = useFormatters();
+  // Season currently being sown, in the user's language, e.g. "Rabi 2026-27"
+  const now = new Date();
+  const seasonText = season ?? f.season(currentSeasonType(now), getSeasonYear(currentSeasonType(now), now));
   return (
     <header className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 lg:px-6 py-3 flex items-center justify-between">
       <h1 className="text-base font-semibold text-gray-800">{title}</h1>
       <div className="flex items-center gap-2">
         <span className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-primary-700 bg-primary-50 border border-primary-200 px-3 py-1.5 rounded-full">
-          🌾 {season}
+          🌾 {seasonText}
         </span>
         {action && (
           <button onClick={action.onClick} className="btn-primary flex items-center gap-1.5">

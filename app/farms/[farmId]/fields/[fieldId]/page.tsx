@@ -3,7 +3,9 @@ import TopBar from "@/components/TopBar";
 import AIEstimatePanel from "@/components/AIEstimatePanel";
 import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Plus, Wheat, BarChart2 } from "lucide-react";
 import { getFarm, getFieldDetail } from "@/lib/api/farms";
-import { categoryLabel, daysUntil, fmt, formatArea, formatDate, formatLocation, signedFmt } from "@/lib/format";
+import { getTranslations } from "next-intl/server";
+import { daysUntil, fmt, formatLocation, signedFmt } from "@/lib/format";
+import { getFormatters } from "@/i18n/server";
 import type { CycleRow, Expense, Sale } from "@/lib/types";
 
 const COMPLETED = ["HARVESTED", "CLOSED"];
@@ -17,6 +19,8 @@ function groupBySeason(cycles: CycleRow[]) {
   return [...groups.entries()]
     .map(([season, rows]) => ({
       season,
+      seasonType: rows[0].seasonType,
+      seasonYear: rows[0].seasonYear,
       rows,
       latestStart: Math.max(...rows.map(r => new Date(r.startDate).getTime())),
       expenses: rows.reduce((sum, r) => sum + r.expenses, 0),
@@ -36,9 +40,11 @@ function groupByDate(expenses: Expense[]) {
 
 export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields/[fieldId]">) {
   const { farmId, fieldId } = await props.params;
-  const [{ field, activeCycle, activeExpenses, sales, report }, farm] = await Promise.all([
+  const [{ field, activeCycle, activeExpenses, sales, report }, farm, t, f] = await Promise.all([
     getFieldDetail(farmId, fieldId),
     getFarm(farmId),
+    getTranslations("fieldDetail"),
+    getFormatters(),
   ]);
 
   const seasons = groupBySeason(report.cycles);
@@ -48,7 +54,7 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
     return acc;
   }, {});
   const maxProfit = Math.max(...seasons.map(s => Math.abs(s.profit)), 1);
-  const yieldUnit = activeCycle?.yieldUnit ?? "";
+  const yieldUnit = activeCycle ? f.unit(activeCycle.yieldUnit) : "";
   // Due within a week (or overdue), based on the expected harvest date entered when planting
   const daysToHarvest = activeCycle?.expectedHarvestDate ? daysUntil(activeCycle.expectedHarvestDate) : null;
   const harvestDue = daysToHarvest !== null && daysToHarvest <= 7;
@@ -66,13 +72,13 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
           <div className="flex-1">
             <h2 className="font-bold text-gray-800">{field.name}</h2>
             <p className="text-xs text-gray-400">
-              {[farm.name, formatArea(field.area, field.areaUnit), field.soilType, field.irrigationType].filter(Boolean).join(" · ")}
+              {[farm.name, f.area(field.area, field.areaUnit), f.soil(field.soilType), f.irrigation(field.irrigationType)].filter(Boolean).join(" · ")}
             </p>
             {harvestDue && activeCycle && (
               <div className="flex items-center gap-1.5 mt-1">
                 <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
                 <span className="text-xs font-semibold text-amber-700">
-                  Ready to Harvest · {formatDate(activeCycle.expectedHarvestDate)}
+                  {t("readyToHarvest", { date: f.date(activeCycle.expectedHarvestDate) })}
                 </span>
               </div>
             )}
@@ -86,20 +92,20 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
             <div className="grid grid-cols-3 gap-2 mb-3">
               <div className="bg-red-50 border border-red-100 rounded-xl p-3 text-center">
                 <p className="text-xs text-gray-400 flex items-center gap-1 justify-center">
-                  <TrendingDown size={10} className="text-red-400" /> Invested
+                  <TrendingDown size={10} className="text-red-400" /> {t("invested")}
                 </p>
                 <p className="text-base font-bold text-red-600 mt-0.5">{fmt(activeCycle.expenses)}</p>
               </div>
               <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 text-center">
                 <p className="text-xs text-gray-400 flex items-center gap-1 justify-center">
-                  <TrendingUp size={10} className="text-gray-300" /> Revenue
+                  <TrendingUp size={10} className="text-gray-300" /> {t("revenue")}
                 </p>
                 {activeCycle.revenue > 0
                   ? <p className="text-base font-bold text-primary-600 mt-0.5">{fmt(activeCycle.revenue)}</p>
-                  : <p className="text-sm font-bold text-gray-300 mt-0.5">Pending</p>}
+                  : <p className="text-sm font-bold text-gray-300 mt-0.5">{t("pending")}</p>}
               </div>
               <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 text-center">
-                <p className="text-xs text-gray-400">Net so far</p>
+                <p className="text-xs text-gray-400">{t("netSoFar")}</p>
                 <p className={`text-sm font-bold mt-0.5 ${activeCycle.profit >= 0 ? "text-primary-600" : "text-red-500"}`}>
                   {signedFmt(activeCycle.profit)}
                 </p>
@@ -110,18 +116,18 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
                 <span className="w-2 h-2 bg-green-500 rounded-full inline-block animate-pulse" />
-                Active crop
+                {t("activeCrop")}
               </h3>
               <div className="flex gap-2">
                 <Link href={`/farms/${farmId}/expenses/add?fieldId=${fieldId}&cycleId=${activeCycle.cycleId}`}
                   className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1">
-                  <Plus size={12} /> Add expense
+                  <Plus size={12} /> {t("addExpense")}
                 </Link>
                 <Link href={`/farms/${farmId}/fields/${fieldId}/harvest?cycleId=${activeCycle.cycleId}`}
                   className={`text-xs py-1.5 px-3 flex items-center gap-1 ${harvestDue
                     ? "bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-colors"
                     : "btn-primary"}`}>
-                  <Wheat size={12} /> {harvestDue ? "⚡ Harvest Now" : "Harvest & Sell"}
+                  <Wheat size={12} /> {harvestDue ? t("harvestNow") : t("harvestSell")}
                 </Link>
               </div>
             </div>
@@ -135,48 +141,48 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
                   <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-xl">🌱</div>
                   <div className="flex-1">
                     <Link href={`/farms/${farmId}/crop-cycles/${activeCycle.cycleId}`} className="font-semibold text-gray-800 hover:text-primary-700">
-                      {activeCycle.crop?.name}{activeCycle.variety && <span className="text-xs font-normal text-gray-400"> · {activeCycle.variety}</span>}
+                      {f.crop(activeCycle.crop?.name)}{activeCycle.variety && <span className="text-xs font-normal text-gray-400"> · {activeCycle.variety}</span>}
                     </Link>
-                    <p className="text-xs text-gray-400">Started {formatDate(activeCycle.startDate)} · {activeCycle.season}</p>
+                    <p className="text-xs text-gray-400">{t("startedOn", { date: f.date(activeCycle.startDate), season: f.season(activeCycle.seasonType, activeCycle.seasonYear) })}</p>
                   </div>
-                  <span className="badge-yellow">Active</span>
+                  <span className="badge-yellow">{t("active")}</span>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   <div className="bg-red-50 rounded-lg p-2.5 text-center">
-                    <p className="text-xs text-gray-400">Invested</p>
+                    <p className="text-xs text-gray-400">{t("invested")}</p>
                     <p className="text-base font-bold text-red-600">{fmt(activeCycle.expenses)}</p>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-2.5 text-center">
-                    <p className="text-xs text-gray-400">Harvested</p>
+                    <p className="text-xs text-gray-400">{t("harvested")}</p>
                     <p className="text-sm font-bold text-gray-600">{activeCycle.actualYield > 0 ? `${activeCycle.actualYield} ${yieldUnit}` : "—"}</p>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-2.5 text-center">
-                    <p className="text-xs text-gray-400">Target</p>
+                    <p className="text-xs text-gray-400">{t("target")}</p>
                     <p className="text-sm font-bold text-gray-600">{activeCycle.expectedYield ? `${activeCycle.expectedYield} ${yieldUnit}` : "—"}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-semibold text-gray-500">Expense log</p>
+                  <p className="text-xs font-semibold text-gray-500">{t("expenseLog")}</p>
                   <Link href={`/farms/${farmId}/expenses/add?fieldId=${fieldId}&cycleId=${activeCycle.cycleId}`}
                     className="text-xs text-primary-600 hover:underline flex items-center gap-0.5">
-                    <Plus size={11} /> Add
+                    <Plus size={11} /> {t("add")}
                   </Link>
                 </div>
 
                 {activeExpenses.length === 0 ? (
-                  <div className="text-center py-4 text-xs text-gray-400">No expenses recorded yet</div>
+                  <div className="text-center py-4 text-xs text-gray-400">{t("noExpenses")}</div>
                 ) : (
                   <div>
                     {groupByDate(activeExpenses).map(([date, items]) => (
                       <div key={date}>
-                        <p className="text-xs text-gray-400 font-medium py-1.5 border-b border-gray-100">{formatDate(date)}</p>
+                        <p className="text-xs text-gray-400 font-medium py-1.5 border-b border-gray-100">{f.date(date)}</p>
                         {items.map(e => (
                           <div key={e._id} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-medium text-gray-700 truncate">{e.description || categoryLabel(e.category)}</p>
-                              <span className="text-xs text-gray-400">{categoryLabel(e.category)}</span>
+                              <p className="text-xs font-medium text-gray-700 truncate">{e.description || f.category(e.category)}</p>
+                              <span className="text-xs text-gray-400">{f.category(e.category)}</span>
                             </div>
                             <span className="text-xs font-semibold text-red-500 ml-3 flex-shrink-0">-{fmt(e.amount)}</span>
                           </div>
@@ -184,7 +190,7 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
                       </div>
                     ))}
                     <div className="flex justify-between pt-2 text-xs font-bold border-t border-gray-200 mt-1">
-                      <span className="text-gray-600">Total spent</span>
+                      <span className="text-gray-600">{t("totalSpent")}</span>
                       <span className="text-red-600">-{fmt(activeCycle.expenses)}</span>
                     </div>
                   </div>
@@ -195,7 +201,7 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
               <AIEstimatePanel input={{
                 crop: activeCycle.crop?.name ?? "",
                 fieldName: field.name,
-                area: formatArea(field.area, field.areaUnit, true),
+                area: f.area(field.area, field.areaUnit, true),
                 soil: field.soilType,
                 irrigation: field.irrigationType,
                 startDate: activeCycle.startDate.slice(0, 10),
@@ -210,17 +216,17 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
         ) : (
           <div className="card p-6 text-center border-dashed border-2 border-gray-200">
             <div className="text-4xl mb-3">🌱</div>
-            <p className="text-sm font-semibold text-gray-600 mb-1">No active crop</p>
-            <p className="text-xs text-gray-400 mb-4">Plant a crop to start tracking expenses and get AI yield estimates</p>
+            <p className="text-sm font-semibold text-gray-600 mb-1">{t("noActiveCrop")}</p>
+            <p className="text-xs text-gray-400 mb-4">{t("noActiveCropText")}</p>
             <Link href={`/farms/${farmId}/crop-cycles/add?fieldId=${fieldId}`} className="btn-primary inline-flex items-center gap-1.5">
-              <Plus size={14} /> Plant a crop
+              <Plus size={14} /> {t("plantCrop")}
             </Link>
           </div>
         )}
 
         {planned.length > 0 && (
           <div className="card p-3 text-xs text-gray-500">
-            Planned next: {planned.map(c => `${c.crop?.name} (${c.season})`).join(", ")}
+            {t("plannedNext", { list: planned.map(c => `${f.crop(c.crop?.name)} (${f.season(c.seasonType, c.seasonYear)})`).join(", ") })}
           </div>
         )}
 
@@ -228,9 +234,9 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
         <div>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-              <BarChart2 size={15} className="text-primary-500" /> P&L history
+              <BarChart2 size={15} className="text-primary-500" /> {t("history")}
             </h3>
-            <span className="text-xs text-gray-400">Harvested crops · by season</span>
+            <span className="text-xs text-gray-400">{t("historyNote")}</span>
           </div>
 
           {seasons.length > 0 && (
@@ -241,7 +247,7 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
                     <p className={`text-xs font-semibold ${s.profit >= 0 ? "text-primary-600" : "text-red-500"}`}>{signedFmt(s.profit)}</p>
                     <div className={`w-full rounded-t-md ${s.profit >= 0 ? "bg-primary-400" : "bg-red-400"}`}
                       style={{ height: `${Math.max(8, (Math.abs(s.profit) / maxProfit) * 100)}%` }} />
-                    <p className="text-xs text-gray-400 whitespace-nowrap">{s.season}</p>
+                    <p className="text-xs text-gray-400 whitespace-nowrap">{f.season(s.seasonType, s.seasonYear)}</p>
                   </div>
                 ))}
               </div>
@@ -249,16 +255,16 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
           )}
 
           {seasons.length === 0 ? (
-            <div className="card p-6 text-center text-xs text-gray-400">No harvested crops yet</div>
+            <div className="card p-6 text-center text-xs text-gray-400">{t("noHarvested")}</div>
           ) : (
             <div className="space-y-3">
               {seasons.map((s, idx) => (
                 <div key={s.season} className="card overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
                     <div className="flex items-center gap-2">
-                      {idx === 0 && <span className="badge-yellow">Latest</span>}
-                      <p className="font-bold text-gray-800 text-sm">{s.season}</p>
-                      <span className="text-xs text-gray-400">{s.rows.length} crop{s.rows.length !== 1 ? "s" : ""}</span>
+                      {idx === 0 && <span className="badge-yellow">{t("latest")}</span>}
+                      <p className="font-bold text-gray-800 text-sm">{f.season(s.seasonType, s.seasonYear)}</p>
+                      <span className="text-xs text-gray-400">{t("cropCount", { count: s.rows.length })}</span>
                     </div>
                     <div className="flex items-center gap-3 text-xs">
                       <span className="text-red-400 hidden sm:inline">-{fmt(s.expenses)}</span>
@@ -274,14 +280,14 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
                         <div className="flex items-center gap-3">
                           <span className="text-lg">🌾</span>
                           <div>
-                            <p className="text-sm font-semibold text-gray-800">{cycle.crop?.name}</p>
-                            <p className="text-xs text-gray-400">{formatDate(cycle.startDate)} → {formatDate(cycle.endDate) || "—"}</p>
+                            <p className="text-sm font-semibold text-gray-800">{f.crop(cycle.crop?.name)}</p>
+                            <p className="text-xs text-gray-400">{f.date(cycle.startDate)} → {f.date(cycle.endDate) || "—"}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="text-right hidden sm:block">
-                            <p className="text-xs text-gray-400">-{fmt(cycle.expenses)} exp</p>
-                            <p className="text-xs text-gray-400">+{fmt(cycle.revenue)} rev</p>
+                            <p className="text-xs text-gray-400">{t("expShort", { amount: fmt(cycle.expenses) })}</p>
+                            <p className="text-xs text-gray-400">{t("revShort", { amount: fmt(cycle.revenue) })}</p>
                           </div>
                           <p className={`text-sm font-bold ${cycle.profit >= 0 ? "text-primary-600" : "text-red-500"}`}>{signedFmt(cycle.profit)}</p>
                           <ChevronRight size={14} className="text-gray-300" />
@@ -290,12 +296,12 @@ export default async function FieldPage(props: PageProps<"/farms/[farmId]/fields
 
                       {salesByCycle[cycle.cycleId]?.length > 0 && (
                         <div className="px-4 pb-3 bg-primary-50/20">
-                          <p className="text-xs text-gray-400 mb-1.5 font-medium">Sale transactions</p>
+                          <p className="text-xs text-gray-400 mb-1.5 font-medium">{t("saleTransactions")}</p>
                           <div className="space-y-1">
                             {salesByCycle[cycle.cycleId].map(sale => (
                               <div key={sale._id} className="flex items-center justify-between text-xs">
                                 <span className="text-gray-500">
-                                  {formatDate(sale.date)} · {sale.quantity} {sale.unit} @ {fmt(sale.pricePerUnit)}/{sale.unit}
+                                  {f.date(sale.date)} · {sale.quantity} {f.unit(sale.unit)} @ {fmt(sale.pricePerUnit)}/{f.unit(sale.unit)}
                                   {sale.buyer && ` · ${sale.buyer}`}
                                 </span>
                                 <span className="font-semibold text-primary-600">+{fmt(sale.totalAmount)}</span>

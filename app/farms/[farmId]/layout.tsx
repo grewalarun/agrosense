@@ -2,22 +2,24 @@
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 import { MapPin, RefreshCw, DollarSign, Wheat, ShoppingCart, BarChart2, LayoutDashboard } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const TABS = [
-  { href: "", label: "Overview", icon: LayoutDashboard },
-  { href: "/fields", label: "Fields", icon: MapPin },
-  { href: "/crop-cycles", label: "Crops", icon: RefreshCw },
-  { href: "/expenses", label: "Expenses", icon: DollarSign },
-  { href: "/harvests", label: "Harvests", icon: Wheat },
-  { href: "/sales", label: "Sales", icon: ShoppingCart },
-  { href: "/reports", label: "Reports", icon: BarChart2 },
-];
+  { href: "", label: "overview", icon: LayoutDashboard },
+  { href: "/fields", label: "fields", icon: MapPin },
+  { href: "/crop-cycles", label: "crops", icon: RefreshCw },
+  { href: "/expenses", label: "expenses", icon: DollarSign },
+  { href: "/harvests", label: "harvests", icon: Wheat },
+  { href: "/sales", label: "sales", icon: ShoppingCart },
+  { href: "/reports", label: "reports", icon: BarChart2 },
+] as const;
 
 export default function FarmDetailLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const params = useParams();
   const farmId = params.farmId as string;
   const base = `/farms/${farmId}`;
+  const t = useTranslations("farmTabs");
 
   return (
     <div>
@@ -32,7 +34,7 @@ export default function FarmDetailLayout({ children }: { children: React.ReactNo
                   active ? "border-primary-600 text-primary-700" : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}>
                 <tab.icon size={13} />
-                {tab.label}
+                {t(tab.label)}
               </Link>
             );
           })}

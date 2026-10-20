@@ -2,6 +2,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 // Trash icon that asks for confirmation, then runs a (bound) server action
 export default function ConfirmDeleteButton({ action, label }: {
@@ -9,6 +10,7 @@ export default function ConfirmDeleteButton({ action, label }: {
   label: string;
 }) {
   const router = useRouter();
+  const t = useTranslations("common");
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [refreshing, startRefresh] = useTransition();
@@ -24,10 +26,10 @@ export default function ConfirmDeleteButton({ action, label }: {
     startRefresh(() => router.refresh());
   };
 
-  if (error) return <span className="text-xs text-red-500" title={error}>Can&apos;t delete</span>;
+  if (error) return <span className="text-xs text-red-500" title={error}>{t("cantDelete")}</span>;
   if (!confirming) {
     return (
-      <button onClick={() => setConfirming(true)} className="text-gray-300 hover:text-red-500 transition-colors" title={`Delete ${label}`}>
+      <button onClick={() => setConfirming(true)} className="text-gray-300 hover:text-red-500 transition-colors" title={t("deleteItem", { label })}>
         <Trash2 size={14} />
       </button>
     );
@@ -36,9 +38,9 @@ export default function ConfirmDeleteButton({ action, label }: {
     <span className="flex items-center gap-2 justify-end">
       <button onClick={remove} disabled={busy} className="text-xs font-semibold text-red-600 hover:underline inline-flex items-center gap-1">
         {busy && <span className="w-3 h-3 border-2 border-red-200 border-t-red-600 rounded-full animate-spin" aria-hidden />}
-        {busy ? "Deleting…" : "Delete"}
+        {busy ? t("deleting") : t("delete")}
       </button>
-      <button onClick={() => setConfirming(false)} disabled={busy} className="text-xs text-gray-400 hover:underline">Cancel</button>
+      <button onClick={() => setConfirming(false)} disabled={busy} className="text-xs text-gray-400 hover:underline">{t("cancel")}</button>
     </span>
   );
 }
