@@ -103,8 +103,8 @@
     "OTHER": "Other"
   },
   "common": {
-    "appName": "AgroSense",
-    "tagline": "Farm Management",
+    "appName": "FarmPaisa",
+    "tagline": "Farm expenses & profit",
     "back": "Back",
     "backToSettings": "Back to Settings",
     "cancel": "Cancel",
@@ -160,7 +160,7 @@
     "signIn": "Sign In",
     "noAccount": "No account?",
     "createOne": "Create one",
-    "growSmarter": "🌾 Grow smarter with AgroSense",
+    "growSmarter": "🌾 Grow smarter with FarmPaisa",
     "createTitle": "Create your account",
     "createSubtitle": "Start managing your farm today",
     "fullName": "Full name",
@@ -234,7 +234,7 @@
       "farm": "Your Farm",
       "field": "First Field"
     },
-    "welcomeTitle": "Welcome to AgroSense",
+    "welcomeTitle": "Welcome to FarmPaisa",
     "welcomeText": "Let's set up your farm in 2 quick steps. It takes less than 2 minutes.",
     "point1": "Create your farm profile",
     "point2": "Add your first field",
@@ -748,11 +748,11 @@
     "language": "Language & Region",
     "languageDesc": "{language} · India · ₹ INR",
     "help": "Help & FAQs",
-    "helpDesc": "How AgroSense works, common questions",
+    "helpDesc": "How FarmPaisa works, common questions",
     "noPhone": "No mobile number",
     "memberSince": "Member since {date}",
     "edit": "Edit",
-    "footer": "AgroSense v1.0.0 · Made for Indian Farmers 🇮🇳"
+    "footer": "FarmPaisa v1.0.0 · Made for Indian Farmers 🇮🇳"
   },
   "profile": {
     "title": "Profile",
@@ -809,7 +809,7 @@
   },
   "help": {
     "title": "Help & FAQs",
-    "howItWorks": "How AgroSense works",
+    "howItWorks": "How FarmPaisa works",
     "faqTitle": "Frequently asked questions",
     "steps": {
       "farm": {
@@ -925,5 +925,9 @@
     "m10": "Oct",
     "m11": "Nov",
     "m12": "Dec"
+  },
+  "meta": {
+    "title": "FarmPaisa – Farm expenses & profit",
+    "description": "Track every rupee your farm spends and earns, crop by crop."
   }
 }

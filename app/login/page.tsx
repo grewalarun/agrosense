@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Leaf, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import { BrandMark, Wordmark } from "@/components/Brand";
 import { useTranslations } from "next-intl";
 import { loginAction } from "@/lib/auth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -32,12 +33,10 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2.5 mb-8">
-          <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
-            <Leaf size={22} className="text-white" />
-          </div>
+          <BrandMark size={60} />
           <div>
-            <div className="text-primary-800 font-bold text-lg leading-none">{tc("appName")}</div>
-            <div className="text-gray-400 text-xs">{tc("tagline")}</div>
+            <Wordmark className="text-2xl leading-none" />
+            <div className="text-gray-500 text-xs mt-1">{tc("tagline")}</div>
           </div>
         </div>
 

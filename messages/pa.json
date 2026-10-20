@@ -103,8 +103,8 @@
     "OTHER": "ਹੋਰ"
   },
   "common": {
-    "appName": "AgroSense",
-    "tagline": "ਖੇਤੀ ਪ੍ਰਬੰਧ",
+    "appName": "FarmPaisa",
+    "tagline": "ਖੇਤੀ ਦਾ ਖ਼ਰਚਾ ਅਤੇ ਮੁਨਾਫ਼ਾ",
     "back": "ਵਾਪਸ",
     "backToSettings": "ਸੈਟਿੰਗਾਂ 'ਤੇ ਵਾਪਸ",
     "cancel": "ਰੱਦ ਕਰੋ",
@@ -160,7 +160,7 @@
     "signIn": "ਲੌਗ ਇਨ ਕਰੋ",
     "noAccount": "ਖਾਤਾ ਨਹੀਂ ਹੈ?",
     "createOne": "ਨਵਾਂ ਬਣਾਓ",
-    "growSmarter": "🌾 AgroSense ਨਾਲ ਸਮਝਦਾਰੀ ਨਾਲ ਖੇਤੀ ਕਰੋ",
+    "growSmarter": "🌾 FarmPaisa ਨਾਲ ਸਮਝਦਾਰੀ ਨਾਲ ਖੇਤੀ ਕਰੋ",
     "createTitle": "ਆਪਣਾ ਖਾਤਾ ਬਣਾਓ",
     "createSubtitle": "ਅੱਜ ਹੀ ਆਪਣੇ ਫ਼ਾਰਮ ਦਾ ਹਿਸਾਬ ਰੱਖਣਾ ਸ਼ੁਰੂ ਕਰੋ",
     "fullName": "ਪੂਰਾ ਨਾਮ",
@@ -234,7 +234,7 @@
       "farm": "ਤੁਹਾਡਾ ਫ਼ਾਰਮ",
       "field": "ਪਹਿਲਾ ਖੇਤ"
     },
-    "welcomeTitle": "AgroSense ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ",
+    "welcomeTitle": "FarmPaisa ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ",
     "welcomeText": "ਆਓ 2 ਆਸਾਨ ਕਦਮਾਂ ਵਿੱਚ ਤੁਹਾਡਾ ਫ਼ਾਰਮ ਤਿਆਰ ਕਰੀਏ। ਇਸ ਵਿੱਚ 2 ਮਿੰਟ ਤੋਂ ਵੀ ਘੱਟ ਲੱਗਣਗੇ।",
     "point1": "ਆਪਣੇ ਫ਼ਾਰਮ ਦੀ ਜਾਣਕਾਰੀ ਜੋੜੋ",
     "point2": "ਆਪਣਾ ਪਹਿਲਾ ਖੇਤ ਜੋੜੋ",
@@ -748,11 +748,11 @@
     "language": "ਭਾਸ਼ਾ ਅਤੇ ਖੇਤਰ",
     "languageDesc": "{language} · ਭਾਰਤ · ₹ INR",
     "help": "ਮਦਦ ਅਤੇ ਸਵਾਲ-ਜਵਾਬ",
-    "helpDesc": "AgroSense ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ, ਆਮ ਸਵਾਲ",
+    "helpDesc": "FarmPaisa ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ, ਆਮ ਸਵਾਲ",
     "noPhone": "ਮੋਬਾਈਲ ਨੰਬਰ ਨਹੀਂ",
     "memberSince": "{date} ਤੋਂ ਮੈਂਬਰ",
     "edit": "ਬਦਲੋ",
-    "footer": "AgroSense v1.0.0 · ਭਾਰਤੀ ਕਿਸਾਨਾਂ ਲਈ 🇮🇳"
+    "footer": "FarmPaisa v1.0.0 · ਭਾਰਤੀ ਕਿਸਾਨਾਂ ਲਈ 🇮🇳"
   },
   "profile": {
     "title": "ਪ੍ਰੋਫ਼ਾਈਲ",
@@ -809,7 +809,7 @@
   },
   "help": {
     "title": "ਮਦਦ ਅਤੇ ਸਵਾਲ-ਜਵਾਬ",
-    "howItWorks": "AgroSense ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ",
+    "howItWorks": "FarmPaisa ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ",
     "faqTitle": "ਅਕਸਰ ਪੁੱਛੇ ਜਾਂਦੇ ਸਵਾਲ",
     "steps": {
       "farm": {
@@ -925,5 +925,9 @@
     "m10": "ਅਕਤੂ",
     "m11": "ਨਵੰ",
     "m12": "ਦਸੰ"
+  },
+  "meta": {
+    "title": "FarmPaisa – ਖੇਤੀ ਦਾ ਖ਼ਰਚਾ ਅਤੇ ਮੁਨਾਫ਼ਾ",
+    "description": "ਆਪਣੇ ਖੇਤ ਦੇ ਹਰ ਰੁਪਏ ਦਾ ਹਿਸਾਬ ਰੱਖੋ — ਫ਼ਸਲ ਦਰ ਫ਼ਸਲ ਖ਼ਰਚਾ ਅਤੇ ਕਮਾਈ।"
   }
 }
