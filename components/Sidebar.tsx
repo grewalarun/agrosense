@@ -5,10 +5,11 @@ import { useState } from "react";
 import {
   LayoutDashboard, Sprout, MapPin, RefreshCw, DollarSign,
   Wheat, ShoppingCart, BarChart2, CalendarDays, Settings,
-  LogOut, Menu, X, Leaf
+  LogOut, Menu, X
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { logoutAction } from "@/lib/auth";
+import { BrandIcon, Wordmark } from "@/components/Brand";
 
 // Farm-specific links point at the farm being viewed, or the user's first farm.
 // Labels are keys in the "nav" messages.
@@ -77,12 +78,12 @@ export default function Sidebar({ userName, defaultFarmId, loading = false }: {
       {/* Logo */}
       <div className="px-4 py-5 border-b border-primary-700">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-accent-400 rounded-lg flex items-center justify-center">
-            <Leaf size={18} className="text-primary-800" />
+          <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center flex-shrink-0">
+            <BrandIcon size={28} />
           </div>
-          <div>
-            <div className="text-white font-bold text-sm leading-none">{tc("appName")}</div>
-            <div className="text-primary-300 text-xs">{tc("tagline")}</div>
+          <div className="min-w-0">
+            <Wordmark onDark className="text-base leading-none" />
+            <div className="text-primary-300 text-xs truncate">{tc("tagline")}</div>
           </div>
         </div>
       </div>
@@ -138,10 +139,10 @@ export default function Sidebar({ userName, defaultFarmId, loading = false }: {
       {/* Mobile top bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-primary-800 flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-accent-400 rounded-lg flex items-center justify-center">
-            <Leaf size={14} className="text-primary-800" />
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+            <BrandIcon size={24} />
           </div>
-          <span className="text-white font-bold text-sm">{tc("appName")}</span>
+          <Wordmark onDark className="text-base" />
         </div>
         <button onClick={() => setOpen(!open)} className="text-white">
           {open ? <X size={22} /> : <Menu size={22} />}

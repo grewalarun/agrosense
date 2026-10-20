@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Leaf, ChevronRight, CheckCircle2 } from "lucide-react";
+import { ChevronRight, CheckCircle2 } from "lucide-react";
+import { BrandMark, Wordmark } from "@/components/Brand";
 import { completeOnboardingAction } from "@/lib/actions/farms";
 import { useTranslations } from "next-intl";
 import { AREA_UNITS, IRRIGATION_TYPES, SOIL_TYPES } from "@/lib/format";
@@ -14,7 +15,6 @@ export default function OnboardingPage() {
   const router = useRouter();
   const t = useTranslations("onboarding");
   const tf = useTranslations("forms");
-  const tc = useTranslations("common");
   const f = useFormatters();
   const steps = [t("steps.farm"), t("steps.field")];
   const [step, setStep] = useState(0);
@@ -79,10 +79,8 @@ export default function OnboardingPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
-            <Leaf size={22} className="text-white" />
-          </div>
-          <span className="text-xl font-bold text-primary-800">{tc("appName")}</span>
+          <BrandMark size={56} />
+          <Wordmark className="text-2xl" />
         </div>
 
         {/* Progress bar */}

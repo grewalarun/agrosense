@@ -103,8 +103,8 @@
     "OTHER": "अन्य"
   },
   "common": {
-    "appName": "AgroSense",
-    "tagline": "खेती प्रबंधन",
+    "appName": "FarmPaisa",
+    "tagline": "खेती का खर्च और मुनाफ़ा",
     "back": "वापस",
     "backToSettings": "सेटिंग्स पर वापस",
     "cancel": "रद्द करें",
@@ -160,7 +160,7 @@
     "signIn": "लॉग इन करें",
     "noAccount": "खाता नहीं है?",
     "createOne": "नया बनाएं",
-    "growSmarter": "🌾 AgroSense के साथ समझदारी से खेती करें",
+    "growSmarter": "🌾 FarmPaisa के साथ समझदारी से खेती करें",
     "createTitle": "अपना खाता बनाएं",
     "createSubtitle": "आज ही अपने फ़ार्म का हिसाब रखना शुरू करें",
     "fullName": "पूरा नाम",
@@ -234,7 +234,7 @@
       "farm": "आपका फ़ार्म",
       "field": "पहला खेत"
     },
-    "welcomeTitle": "AgroSense में आपका स्वागत है",
+    "welcomeTitle": "FarmPaisa में आपका स्वागत है",
     "welcomeText": "आइए 2 आसान चरणों में आपका फ़ार्म सेट करें। इसमें 2 मिनट से भी कम लगेंगे।",
     "point1": "अपने फ़ार्म की जानकारी जोड़ें",
     "point2": "अपना पहला खेत जोड़ें",
@@ -748,11 +748,11 @@
     "language": "भाषा और क्षेत्र",
     "languageDesc": "{language} · भारत · ₹ INR",
     "help": "मदद और सवाल-जवाब",
-    "helpDesc": "AgroSense कैसे काम करता है, आम सवाल",
+    "helpDesc": "FarmPaisa कैसे काम करता है, आम सवाल",
     "noPhone": "मोबाइल नंबर नहीं",
     "memberSince": "{date} से सदस्य",
     "edit": "बदलें",
-    "footer": "AgroSense v1.0.0 · भारतीय किसानों के लिए 🇮🇳"
+    "footer": "FarmPaisa v1.0.0 · भारतीय किसानों के लिए 🇮🇳"
   },
   "profile": {
     "title": "प्रोफ़ाइल",
@@ -809,7 +809,7 @@
   },
   "help": {
     "title": "मदद और सवाल-जवाब",
-    "howItWorks": "AgroSense कैसे काम करता है",
+    "howItWorks": "FarmPaisa कैसे काम करता है",
     "faqTitle": "अक्सर पूछे जाने वाले सवाल",
     "steps": {
       "farm": {
@@ -925,5 +925,9 @@
     "m10": "अक्टू॰",
     "m11": "नव॰",
     "m12": "दिस॰"
+  },
+  "meta": {
+    "title": "FarmPaisa – खेती का खर्च और मुनाफ़ा",
+    "description": "अपने खेत के हर रुपये का हिसाब रखें — फ़सल दर फ़सल खर्च और कमाई।"
   }
 }

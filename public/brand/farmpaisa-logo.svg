@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 512">
+  <title>FarmPaisa</title>
+  <svg x="0" y="0" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="fp-coin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd84d"/>
+      <stop offset="1" stop-color="#e5a50a"/>
+    </linearGradient>
+    <linearGradient id="fp-leaf" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#2f7d1f"/>
+      <stop offset="1" stop-color="#6fb52c"/>
+    </linearGradient>
+    <path id="fp-grain" d="M0 0 C 14 -26 46 -34 66 -22 C 54 -2 26 8 0 0 Z"/>
+  </defs>
+
+  <!-- coin -->
+  <circle cx="312" cy="322" r="132" fill="url(#fp-coin)"/>
+  <circle cx="312" cy="322" r="113" fill="none" stroke="#d4930a" stroke-width="7" opacity="0.5"/>
+
+  <!-- rupee sign -->
+  <g transform="translate(314 334) scale(0.86) translate(-300 -303)" fill="none" stroke="#2f7d1f" stroke-width="28" stroke-linejoin="miter">
+    <path d="M226 214 H372"/>
+    <path d="M226 258 H372"/>
+    <path d="M248 214 C 334 214 334 300 248 300 H 232"/>
+    <path d="M256 300 L 348 394" stroke-linecap="square"/>
+  </g>
+
+  <!-- swoosh under the coin -->
+  <path d="M146 292 C 150 410 240 474 334 470 C 412 466 458 420 476 354 C 446 414 396 442 332 444 C 246 446 172 396 146 292 Z" fill="url(#fp-leaf)"/>
+
+  <!-- big leaf above the coin -->
+  <path d="M150 248 C 176 146 286 84 436 64 C 404 158 326 200 232 214 C 196 220 168 232 150 248 Z" fill="url(#fp-leaf)"/>
+  <path d="M164 238 C 250 186 330 132 412 84" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+
+  <!-- wheat stalk -->
+  <path d="M128 452 C 112 360 112 230 140 74" fill="none" stroke="#3f8f22" stroke-width="12" stroke-linecap="round"/>
+  <g fill="url(#fp-leaf)">
+    <use href="#fp-grain" transform="translate(140 80) rotate(-64) scale(0.95)"/>
+    <use href="#fp-grain" transform="translate(138 118) rotate(-20)"/>
+    <use href="#fp-grain" transform="translate(134 124) scale(-1 1) rotate(-20)"/>
+    <use href="#fp-grain" transform="translate(130 170) rotate(-15) scale(1.08)"/>
+    <use href="#fp-grain" transform="translate(128 176) scale(-1 1) rotate(-15) scale(1.08)"/>
+    <use href="#fp-grain" transform="translate(124 226) scale(-1 1) rotate(-10) scale(1.18)"/>
+  </g>
+
+  <!-- accents -->
+  <path d="M452 150 C 470 128 490 124 500 126 C 492 150 474 160 452 150 Z" fill="url(#fp-leaf)"/>
+  <path d="M462 232 C 476 206 494 198 506 198 C 500 226 484 238 462 232 Z" fill="url(#fp-leaf)"/>
+  <path d="M446 104 L 460 82" stroke="#f2b705" stroke-width="10" stroke-linecap="round"/>
+  <path d="M474 190 L 496 176" stroke="#f2b705" stroke-width="10" stroke-linecap="round"/>
+  <path d="M96 330 C 104 372 120 400 140 420" fill="none" stroke="#f2b705" stroke-width="10" stroke-linecap="round"/>
+</svg>
+  <text x="560" y="330" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" font-size="210" font-weight="800" letter-spacing="-4">
+    <tspan fill="#2f7d1f">Farm</tspan><tspan fill="#e5a50a">Paisa</tspan>
+  </text>
+</svg>
