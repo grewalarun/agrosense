@@ -752,7 +752,9 @@
     "noPhone": "No mobile number",
     "memberSince": "Member since {date}",
     "edit": "Edit",
-    "footer": "FarmPaisa v1.0.0 · Made for Indian Farmers 🇮🇳"
+    "footer": "FarmPaisa v1.0.0 · Made for Indian Farmers 🇮🇳",
+    "emailTest": "Send test email",
+    "emailTestDesc": "Check that email sending works"
   },
   "profile": {
     "title": "Profile",
@@ -929,5 +931,25 @@
   "meta": {
     "title": "FarmPaisa – Farm expenses & profit",
     "description": "Track every rupee your farm spends and earns, crop by crop."
+  },
+  "emailTest": {
+    "title": "Send test email",
+    "heading": "Test email",
+    "subtitle": "Sends a FarmPaisa test email through Resend to any address.",
+    "to": "To",
+    "subject": "Subject",
+    "subjectPlaceholder": "FarmPaisa test email",
+    "message": "Message",
+    "messagePlaceholder": "Optional message to include…",
+    "limitNote": "You can send one test email per minute.",
+    "send": "Send test email",
+    "sending": "Sending…",
+    "sent": "Test email sent to {to}",
+    "sentId": "Resend id: {id}",
+    "errors": {
+      "to": "Enter one valid email address",
+      "subject": "Subject can be at most {max} characters",
+      "message": "Message can be at most {max} characters"
+    }
   }
 }
