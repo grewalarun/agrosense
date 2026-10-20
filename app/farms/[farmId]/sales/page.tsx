@@ -1,6 +1,6 @@
 import TopBar from "@/components/TopBar";
 import Link from "next/link";
-import { Plus, TrendingUp } from "lucide-react";
+import { Plus, TrendingUp, Pencil } from "lucide-react";
 import ConfirmDeleteButton from "@/components/ConfirmDeleteButton";
 import { getFarmSales } from "@/lib/api/harvests";
 import { deleteSaleAction } from "@/lib/actions/harvests";
@@ -59,7 +59,12 @@ export default async function SalesPage(props: PageProps<"/farms/[farmId]/sales"
                         <td className="px-4 py-3 hidden md:table-cell text-xs text-gray-600">{fmt(s.pricePerUnit)}/{u}</td>
                         <td className="px-4 py-3 hidden md:table-cell text-xs text-gray-500">{formatDate(s.date)}</td>
                         <td className="px-4 py-3 text-right"><span className="text-sm font-semibold text-primary-600">{fmt(s.totalAmount)}</span></td>
-                        <td className="px-3 py-3 text-right"><ConfirmDeleteButton action={deleteSaleAction.bind(null, s._id)} label="sale" /></td>
+                        <td className="px-3 py-3 text-right">
+                          <span className="flex items-center justify-end gap-3">
+                            <Link href={`/farms/${farmId}/crop-cycles/${s.cycleId}#sale-${s._id}`} className="text-gray-300 hover:text-primary-600" title="Edit on crop page"><Pencil size={13} /></Link>
+                            <ConfirmDeleteButton action={deleteSaleAction.bind(null, s._id)} label="sale" />
+                          </span>
+                        </td>
                       </tr>
                     );
                   })}

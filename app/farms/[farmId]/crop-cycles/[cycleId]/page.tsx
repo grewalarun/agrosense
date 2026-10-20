@@ -1,16 +1,17 @@
 import Link from "next/link";
 import TopBar from "@/components/TopBar";
 import AIEstimatePanel from "@/components/AIEstimatePanel";
-import { ChevronLeft, TrendingUp, TrendingDown, Plus, Wheat } from "lucide-react";
+import { ChevronLeft, TrendingUp, TrendingDown, Plus, Wheat, Lock } from "lucide-react";
 import { getCycleDetail } from "@/lib/api/cycles";
 import { cropEmoji } from "@/lib/crops";
 import { CYCLE_STATUS, areaUnitShort, categoryColor, categoryLabel, fmt, formatArea, formatDate, formatLocation, signedFmt, unitLabel } from "@/lib/format";
 import type { ExpenseCategory } from "@/lib/types";
 import CycleActions from "./cycle-actions";
+import { ExpenseRow, SaleRow } from "./entry-rows";
 
 export default async function CropDetailPage(props: PageProps<"/farms/[farmId]/crop-cycles/[cycleId]">) {
   const { farmId, cycleId } = await props.params;
-  const { report, cycle, expenses, sales, farm } = await getCycleDetail(farmId, cycleId);
+  const { report, cycle, expenses, sales, harvests, farm } = await getCycleDetail(farmId, cycleId);
 
   const field = cycle.fieldId;
   const cropName = report.crop?.name ?? "Crop";
@@ -19,6 +20,9 @@ export default async function CropDetailPage(props: PageProps<"/farms/[farmId]/c
   const isActive = report.status === "ACTIVE";
   const isDone = report.status === "HARVESTED" || report.status === "CLOSED";
   const canAddExpense = report.status !== "CLOSED";
+  // Entries stay editable until the season is closed; Reopen unlocks them again
+  const editable = report.status !== "CLOSED";
+  const remainingByHarvest = new Map(harvests.map(h => [h._id, h.remainingQuantity]));
   const stock = report.harvested[report.yieldUnit]?.remaining ?? 0;
   const byCategory = (Object.entries(report.expensesByCategory) as [ExpenseCategory, number][]).sort((a, b) => b[1] - a[1]);
 
@@ -86,13 +90,13 @@ export default async function CropDetailPage(props: PageProps<"/farms/[farmId]/c
             </div>
             <div className={`rounded-xl p-3 text-center border ${report.revenue > 0 ? "bg-primary-50 border-primary-100" : "bg-gray-50 border-gray-100"}`}>
               <p className="text-xs text-gray-400 flex items-center gap-1 justify-center"><TrendingUp size={11} className={report.revenue > 0 ? "text-primary-500" : "text-gray-300"} />Revenue</p>
-              <p className={`text-lg font-bold mt-0.5 ${report.revenue > 0 ? "text-primary-600" : "text-gray-300"}`}>
+              <p className={`text-base sm:text-lg font-bold mt-0.5 whitespace-nowrap tabular-nums ${report.revenue > 0 ? "text-primary-600" : "text-gray-300"}`}>
                 {report.revenue > 0 ? fmt(report.revenue) : "Pending"}
               </p>
             </div>
             <div className={`rounded-xl p-3 text-center border ${report.profit >= 0 ? "bg-accent-50 border-accent-200" : "bg-red-50 border-red-100"}`}>
               <p className="text-xs text-gray-400">{isDone ? "Net profit" : "Net so far"}</p>
-              <p className={`text-lg font-bold mt-0.5 ${report.profit >= 0 ? "text-accent-700" : "text-red-600"}`}>{signedFmt(report.profit)}</p>
+              <p className={`text-base sm:text-lg font-bold mt-0.5 whitespace-nowrap tabular-nums ${report.profit >= 0 ? "text-accent-700" : "text-red-600"}`}>{signedFmt(report.profit)}</p>
               {report.profitPerArea !== null && isDone && (
                 <p className="text-xs text-gray-400">{signedFmt(report.profitPerArea)} / {areaUnitShort(field.areaUnit)}</p>
               )}
@@ -128,21 +132,10 @@ export default async function CropDetailPage(props: PageProps<"/farms/[farmId]/c
                 })}
               </div>
 
-              <details className="mt-3">
-                <summary className="text-xs text-primary-600 cursor-pointer hover:underline">View all {expenses.length} expense entries</summary>
-                <div className="mt-2 space-y-1.5 border-t border-gray-100 pt-2">
-                  {expenses.map(e => (
-                    <div key={e._id} className="flex justify-between text-xs py-1">
-                      <div>
-                        <span className="font-medium text-gray-700">{e.description || categoryLabel(e.category)}</span>
-                        <span className="text-gray-400 ml-2">{formatDate(e.date)}</span>
-                        {e.notes && <p className="text-gray-400">{e.notes}</p>}
-                      </div>
-                      <span className="font-semibold text-red-500">-{fmt(e.amount)}</span>
-                    </div>
-                  ))}
-                </div>
-              </details>
+              <div className="mt-4">
+                <p className="text-xs font-semibold text-gray-500 mb-1">Expense entries ({expenses.length})</p>
+                {expenses.map(e => <ExpenseRow key={e._id} expense={e} editable={editable} />)}
+              </div>
             </div>
           )}
 
@@ -150,14 +143,9 @@ export default async function CropDetailPage(props: PageProps<"/farms/[farmId]/c
             <div>
               <p className="text-xs font-semibold text-gray-500 mb-2">Revenue breakdown ({sales.length} sale{sales.length > 1 ? "s" : ""})</p>
               <div className="space-y-2">
-                {sales.map(s => (
-                  <div key={s._id} className="flex items-center justify-between text-xs py-2 border-b border-gray-50 last:border-0">
-                    <div>
-                      <p className="font-medium text-gray-700">{s.quantity} {unitLabel(s.unit)}{s.buyer && ` → ${s.buyer}`}</p>
-                      <p className="text-gray-400">{fmt(s.pricePerUnit)}/{unitLabel(s.unit)} · {formatDate(s.date)}</p>
-                    </div>
-                    <span className="font-bold text-primary-600">+{fmt(s.totalAmount)}</span>
-                  </div>
+                {sales.map(sale => (
+                  <SaleRow key={sale._id} sale={sale} editable={editable}
+                    maxQuantity={Math.round((sale.quantity + (remainingByHarvest.get(sale.harvestId) ?? 0)) * 1000) / 1000} />
                 ))}
                 <div className="flex justify-between text-sm pt-1 font-bold border-t border-gray-100">
                   <span className="text-gray-600">Total revenue</span>
@@ -165,6 +153,12 @@ export default async function CropDetailPage(props: PageProps<"/farms/[farmId]/c
                 </div>
               </div>
             </div>
+          )}
+
+          {!editable && (expenses.length > 0 || sales.length > 0) && (
+            <p className="text-xs text-gray-500 bg-gray-50 border border-gray-100 rounded-lg p-2.5 mt-4 flex items-center gap-1.5">
+              <Lock size={12} /> Season closed — use <b>Reopen</b> above to edit or delete entries.
+            </p>
           )}
 
           {expenses.length === 0 && sales.length === 0 && (

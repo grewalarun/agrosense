@@ -32,3 +32,12 @@ export async function deleteExpenseAction(expenseId: string): Promise<Result<nul
   if (result.error === undefined) revalidatePath("/", "layout");
   return result;
 }
+
+export async function updateExpenseAction(expenseId: string, input: ExpenseInput): Promise<Result<null>> {
+  const result = await run(async () => {
+    await apiFetch(`/expenses/${encodeURIComponent(expenseId)}`, { method: "PATCH", body: input });
+    return null;
+  });
+  if (result.error === undefined) revalidatePath("/", "layout");
+  return result;
+}

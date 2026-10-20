@@ -1,6 +1,6 @@
 import TopBar from "@/components/TopBar";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 import { getFarmExpenses } from "@/lib/api/cycles";
 import { EXPENSE_CATEGORIES, categoryColor, categoryLabel, fmt, formatDate } from "@/lib/format";
 import { SEASON_TYPES } from "@/lib/season";
@@ -80,7 +80,12 @@ export default async function ExpensesPage(props: PageProps<"/farms/[farmId]/exp
                         <td className="px-4 py-3 hidden md:table-cell"><span className="text-xs text-gray-500">{formatDate(e.date)}</span></td>
                         <td className="px-4 py-3 text-right"><span className="text-sm font-semibold text-red-600">{fmt(e.amount)}</span></td>
                         <td className="px-3 py-3 text-right">
-                          {cycle?.status !== "CLOSED" && <ConfirmDeleteButton action={deleteExpenseAction.bind(null, e._id)} label={e.description || categoryLabel(e.category)} />}
+                          {cycle && cycle.status !== "CLOSED" && (
+                            <span className="flex items-center justify-end gap-3">
+                              <Link href={`/farms/${farmId}/crop-cycles/${cycle._id}#expense-${e._id}`} className="text-gray-300 hover:text-primary-600" title="Edit on crop page"><Pencil size={13} /></Link>
+                              <ConfirmDeleteButton action={deleteExpenseAction.bind(null, e._id)} label={e.description || categoryLabel(e.category)} />
+                            </span>
+                          )}
                         </td>
                       </tr>
                     );

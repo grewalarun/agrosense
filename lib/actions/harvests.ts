@@ -70,3 +70,13 @@ export async function deleteHarvestAction(harvestId: string): Promise<Result<nul
   if (result.error === undefined) revalidatePath("/", "layout");
   return result;
 }
+
+// Quantity changes are checked against the harvest's remaining stock by the backend
+export async function updateSaleAction(saleId: string, input: SaleInput): Promise<Result<null>> {
+  const result = await run(async () => {
+    await apiFetch(`/sales/${encodeURIComponent(saleId)}`, { method: "PATCH", body: input });
+    return null;
+  });
+  if (result.error === undefined) revalidatePath("/", "layout");
+  return result;
+}
