@@ -2,7 +2,7 @@ import { Bone, CardGridSkeleton, ChartSkeleton, PageSkeleton, PanelSkeleton, Sta
 
 export default function Loading() {
   return (
-    <PageSkeleton title="Dashboard">
+    <PageSkeleton titleKey="dashboard">
       <div className="rounded-xl p-4 bg-primary-600/90 flex items-center justify-between">
         <div className="space-y-2">
           <div className="h-3 w-28 rounded bg-primary-400/70 animate-pulse" />

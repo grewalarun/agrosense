@@ -7,33 +7,35 @@ import {
   Wheat, ShoppingCart, BarChart2, CalendarDays, Settings,
   LogOut, Menu, X, Leaf
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { logoutAction } from "@/lib/auth";
 
-// Farm-specific links point at the farm being viewed, or the user's first farm
+// Farm-specific links point at the farm being viewed, or the user's first farm.
+// Labels are keys in the "nav" messages.
 function buildNav(farmId: string | null) {
   const farmLink = (path: string) => (farmId ? `/farms/${farmId}${path}` : "/farms");
   return [
-    { label: "OVERVIEW", items: [
-      { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-      { href: "/farms", icon: Sprout, label: "My Farms" },
+    { label: "overview" as const, items: [
+      { href: "/dashboard", icon: LayoutDashboard, label: "dashboard" as const },
+      { href: "/farms", icon: Sprout, label: "myFarms" as const },
     ]},
     ...(farmId ? [
-      { label: "CROPS", items: [
-        { href: farmLink("/fields"), icon: MapPin, label: "Fields" },
-        { href: farmLink("/crop-cycles"), icon: RefreshCw, label: "Crop Cycles" },
+      { label: "crops" as const, items: [
+        { href: farmLink("/fields"), icon: MapPin, label: "fields" as const },
+        { href: farmLink("/crop-cycles"), icon: RefreshCw, label: "cropCycles" as const },
       ]},
-      { label: "FINANCE", items: [
-        { href: farmLink("/expenses"), icon: DollarSign, label: "Expenses" },
-        { href: farmLink("/harvests"), icon: Wheat, label: "Harvests" },
-        { href: farmLink("/sales"), icon: ShoppingCart, label: "Sales" },
+      { label: "finance" as const, items: [
+        { href: farmLink("/expenses"), icon: DollarSign, label: "expenses" as const },
+        { href: farmLink("/harvests"), icon: Wheat, label: "harvests" as const },
+        { href: farmLink("/sales"), icon: ShoppingCart, label: "sales" as const },
       ]},
-      { label: "INSIGHTS", items: [
-        { href: farmLink("/reports"), icon: BarChart2, label: "Reports" },
-        { href: farmLink("/planning"), icon: CalendarDays, label: "Planning" },
+      { label: "insights" as const, items: [
+        { href: farmLink("/reports"), icon: BarChart2, label: "reports" as const },
+        { href: farmLink("/planning"), icon: CalendarDays, label: "planning" as const },
       ]},
     ] : []),
-    { label: "ACCOUNT", items: [
-      { href: "/settings", icon: Settings, label: "Settings" },
+    { label: "account" as const, items: [
+      { href: "/settings", icon: Settings, label: "settings" as const },
     ]},
   ];
 }
@@ -57,6 +59,8 @@ export default function Sidebar({ userName, defaultFarmId, loading = false }: {
   const params = useParams();
   const farmId = (params.farmId as string | undefined) ?? defaultFarmId;
   const nav = buildNav(farmId);
+  const t = useTranslations("nav");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -77,8 +81,8 @@ export default function Sidebar({ userName, defaultFarmId, loading = false }: {
             <Leaf size={18} className="text-primary-800" />
           </div>
           <div>
-            <div className="text-white font-bold text-sm leading-none">AgroSense</div>
-            <div className="text-primary-300 text-xs">Farm Management</div>
+            <div className="text-white font-bold text-sm leading-none">{tc("appName")}</div>
+            <div className="text-primary-300 text-xs">{tc("tagline")}</div>
           </div>
         </div>
       </div>
@@ -87,7 +91,7 @@ export default function Sidebar({ userName, defaultFarmId, loading = false }: {
       <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-4">
         {nav.map(section => (
           <div key={section.label}>
-            <p className="text-primary-400 text-xs font-semibold px-3 mb-1 tracking-wider">{section.label}</p>
+            <p className="text-primary-400 text-xs font-semibold px-3 mb-1 tracking-wider">{t(section.label)}</p>
             <div className="space-y-0.5">
               {section.items.map(item => {
                 const active = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -99,7 +103,7 @@ export default function Sidebar({ userName, defaultFarmId, loading = false }: {
                     className={active ? "sidebar-link-active" : "sidebar-link text-primary-200 hover:bg-primary-700 hover:text-white"}
                   >
                     <item.icon size={16} />
-                    {item.label}
+                    {t(item.label)}
                     <PendingDot />
                   </Link>
                 );
@@ -119,9 +123,9 @@ export default function Sidebar({ userName, defaultFarmId, loading = false }: {
             {loading
               ? <div className="h-3.5 w-24 rounded bg-primary-700 animate-pulse mb-1" aria-hidden />
               : <p className="text-white text-sm font-medium truncate">{userName}</p>}
-            <p className="text-primary-300 text-xs">Farm Owner</p>
+            <p className="text-primary-300 text-xs">{tc("farmOwner")}</p>
           </div>
-          <button onClick={handleLogout} className="text-primary-300 hover:text-white transition-colors" title="Logout">
+          <button onClick={handleLogout} className="text-primary-300 hover:text-white transition-colors" title={tc("logout")}>
             <LogOut size={16} />
           </button>
         </div>
@@ -137,7 +141,7 @@ export default function Sidebar({ userName, defaultFarmId, loading = false }: {
           <div className="w-7 h-7 bg-accent-400 rounded-lg flex items-center justify-center">
             <Leaf size={14} className="text-primary-800" />
           </div>
-          <span className="text-white font-bold text-sm">AgroSense</span>
+          <span className="text-white font-bold text-sm">{tc("appName")}</span>
         </div>
         <button onClick={() => setOpen(!open)} className="text-white">
           {open ? <X size={22} /> : <Menu size={22} />}

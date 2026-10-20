@@ -3,7 +3,9 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/dal";
 import { type Result, run } from "@/lib/actions/run";
-import { NAME_COOKIE, REFRESH_COOKIE, cookieOptions } from "@/lib/session";
+import { ACCESS_COOKIE, NAME_COOKIE, REFRESH_COOKIE, cookieOptions } from "@/lib/session";
+import { LOCALE_COOKIE, isLocale } from "@/i18n/config";
+import { localeCookieOptions } from "@/lib/locale-cookie";
 import type { User } from "@/lib/types";
 
 export async function updateProfileAction(input: { name: string; phone: string }): Promise<Result<{ user: User }>> {
@@ -24,4 +26,19 @@ export async function changePasswordAction(input: { currentPassword: string; new
   return run(() =>
     apiFetch<{ message: string }>("/auth/change-password", { method: "POST", body: { ...input, refreshToken } })
   );
+}
+
+// Switches the UI language: remembered on this device (cookie) and, when logged in,
+// on the account so other devices pick it up at their next login
+export async function setLanguageAction(locale: string): Promise<Result<null>> {
+  if (!isLocale(locale)) return { error: "Unsupported language" };
+  const cookieStore = await cookies();
+  cookieStore.set(LOCALE_COOKIE, locale, localeCookieOptions());
+
+  if (cookieStore.get(ACCESS_COOKIE)?.value) {
+    const saved = await run(() => apiFetch("/auth/me", { method: "PATCH", body: { language: locale } }));
+    if (saved.error !== undefined) return saved;
+  }
+  revalidatePath("/", "layout");
+  return { data: null };
 }

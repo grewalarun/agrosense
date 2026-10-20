@@ -2,7 +2,7 @@ import { CardGridSkeleton, PageSkeleton, StatCardsSkeleton } from "@/components/
 
 export default function Loading() {
   return (
-    <PageSkeleton title="Harvests">
+    <PageSkeleton titleKey="harvests">
       <StatCardsSkeleton />
       <CardGridSkeleton count={3} />
     </PageSkeleton>

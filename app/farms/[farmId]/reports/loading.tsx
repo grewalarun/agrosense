@@ -2,7 +2,7 @@ import { ChartSkeleton, ChipsSkeleton, PageSkeleton, PanelSkeleton, StatCardsSke
 
 export default function Loading() {
   return (
-    <PageSkeleton title="Reports">
+    <PageSkeleton titleKey="reports">
       <ChipsSkeleton />
       <div className="card p-5"><StatCardsSkeleton count={4} /></div>
       <ChartSkeleton />

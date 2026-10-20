@@ -2,7 +2,7 @@ import { PageSkeleton, StatCardsSkeleton, TableSkeleton } from "@/components/Ske
 
 export default function Loading() {
   return (
-    <PageSkeleton title="Sales">
+    <PageSkeleton titleKey="sales">
       <StatCardsSkeleton />
       <TableSkeleton rows={6} cols={6} />
     </PageSkeleton>

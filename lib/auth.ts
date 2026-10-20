@@ -1,14 +1,21 @@
 "use server";
 import { cookies } from "next/headers";
+import { getLocale } from "next-intl/server";
 import { ACCESS_COOKIE, NAME_COOKIE, REFRESH_COOKIE, Tokens, apiBaseUrl, cookieOptions } from "@/lib/session";
+import { LOCALE_COOKIE, isLocale } from "@/i18n/config";
+import { localeCookieOptions } from "@/lib/locale-cookie";
 
-type AuthResponse = Tokens & { user?: { name?: string }; message?: string };
+type AuthResponse = Tokens & { user?: { name?: string; language?: string }; message?: string };
 
 async function startSession(data: AuthResponse, fallbackName: string) {
   const cookieStore = await cookies();
   cookieStore.set(ACCESS_COOKIE, data.accessToken, cookieOptions(data.accessToken));
   cookieStore.set(REFRESH_COOKIE, data.refreshToken, cookieOptions(data.refreshToken));
   cookieStore.set(NAME_COOKIE, data.user?.name || fallbackName, cookieOptions(data.refreshToken, false));
+  // The account's saved language wins, so it follows the user to every device
+  if (isLocale(data.user?.language)) {
+    cookieStore.set(LOCALE_COOKIE, data.user.language, localeCookieOptions());
+  }
 }
 
 async function postAuth(path: string, body: Record<string, string>) {
@@ -34,7 +41,8 @@ export async function loginAction(email: string, password: string) {
 }
 
 export async function signupAction(name: string, email: string, password: string) {
-  const { ok, data } = await postAuth("signup", { name, email, password });
+  // Start the account in the language picked on the signup screen
+  const { ok, data } = await postAuth("signup", { name, email, password, language: await getLocale() });
   if (!ok) return { error: data.message || "Signup failed" };
   await startSession(data, name);
   return { success: true };
