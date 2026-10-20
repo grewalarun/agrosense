@@ -7,6 +7,14 @@ export type ExpenseCategory =
   | "SEEDS" | "FERTILIZER" | "PESTICIDE" | "LABOUR"
   | "IRRIGATION" | "MACHINERY" | "TRANSPORT" | "OTHER";
 
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  createdOn: string;
+};
+
 export type Location = { village?: string; district?: string; state?: string; pincode?: string };
 
 export type Farm = {
