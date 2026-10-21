@@ -7,6 +7,7 @@ import { BrandMark, Wordmark } from "@/components/Brand";
 import { useTranslations } from "next-intl";
 import { signupAction } from "@/lib/auth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -23,10 +24,12 @@ export default function SignupPage() {
     e.preventDefault();
     setError(""); setLoading(true);
     const result = await signupAction(name, email, password);
+    if (result.verify) {
+      const { id, email: to, wait } = result.verify;
+      return router.push(`/verify-email?${new URLSearchParams({ id, email: to, wait: String(wait) })}`);
+    }
     setLoading(false);
-    if (result.error) return setError(result.error);
-    router.push("/onboarding");
-    router.refresh();
+    if (result.error !== undefined) setError(result.error);
   };
 
   return (
@@ -78,6 +81,8 @@ export default function SignupPage() {
               {loading ? t("creating") : t("createAccount")}
             </button>
           </form>
+
+          <GoogleSignInButton text="signup_with" />
 
           <p className="text-center text-sm text-gray-500 mt-4">
             {t("haveAccount")}{" "}

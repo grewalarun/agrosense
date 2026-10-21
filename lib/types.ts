@@ -12,6 +12,10 @@ export type User = {
   name: string;
   email: string;
   phone?: string;
+  language?: string;
+  // false for accounts that only sign in with Google
+  hasPassword?: boolean;
+  hasGoogle?: boolean;
   createdOn: string;
 };
 

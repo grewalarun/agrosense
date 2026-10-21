@@ -5,7 +5,27 @@ import { ACCESS_COOKIE, NAME_COOKIE, REFRESH_COOKIE, Tokens, apiBaseUrl, cookieO
 import { LOCALE_COOKIE, isLocale } from "@/i18n/config";
 import { localeCookieOptions } from "@/lib/locale-cookie";
 
-type AuthResponse = Tokens & { user?: { name?: string; language?: string }; message?: string };
+type AuthResponse = Tokens & {
+  user?: { name?: string; language?: string };
+  message?: string;
+  // backend error code, e.g. WRONG_CODE, so the form can show a translated message
+  code?: string;
+  attemptsLeft?: number;
+  // set when the email must be verified with the emailed code first
+  verificationRequired?: boolean;
+  verificationId?: string;
+  email?: string;
+  retryAfter?: number;
+  isNew?: boolean;
+};
+
+// The verify-email page needs these to finish a signup
+export type Verification = { id: string; email: string; wait: number };
+
+export type AuthResult =
+  | { success: true; isNew?: boolean; error?: undefined; verify?: undefined }
+  | { error: string; code?: string; attemptsLeft?: number; retryAfter?: number; verify?: undefined }
+  | { verify: Verification; error?: undefined; success?: undefined; isNew?: undefined };
 
 async function startSession(data: AuthResponse, fallbackName: string) {
   const cookieStore = await cookies();
@@ -27,25 +47,60 @@ async function postAuth(path: string, body: Record<string, string>) {
       cache: "no-store",
     });
     const data: AuthResponse = await res.json().catch(() => ({}));
-    return { ok: res.ok, data };
+    return { ok: res.ok, status: res.status, data };
   } catch {
-    return { ok: false, data: { message: "Could not reach the server, please try again" } as AuthResponse };
+    return { ok: false, status: 0, data: { message: "Could not reach the server, please try again" } as AuthResponse };
   }
 }
 
-export async function loginAction(email: string, password: string) {
+function toVerification(data: AuthResponse): Verification | null {
+  if (!data.verificationRequired || !data.verificationId || !data.email) return null;
+  return { id: data.verificationId, email: data.email, wait: data.retryAfter ?? 0 };
+}
+
+function toError(data: AuthResponse, fallback: string): AuthResult {
+  return { error: data.message || fallback, code: data.code, attemptsLeft: data.attemptsLeft, retryAfter: data.retryAfter };
+}
+
+export async function loginAction(email: string, password: string): Promise<AuthResult> {
   const { ok, data } = await postAuth("login", { email, password });
-  if (!ok) return { error: data.message || "Login failed" };
+  // Signed up but never entered the code: a new code was sent
+  const verify = toVerification(data);
+  if (verify) return { verify };
+  if (!ok) return toError(data, "Login failed");
   await startSession(data, email.split("@")[0]);
   return { success: true };
 }
 
-export async function signupAction(name: string, email: string, password: string) {
+// Signup emails a code; the account is created by verifyEmailAction
+export async function signupAction(name: string, email: string, password: string): Promise<AuthResult> {
   // Start the account in the language picked on the signup screen
   const { ok, data } = await postAuth("signup", { name, email, password, language: await getLocale() });
-  if (!ok) return { error: data.message || "Signup failed" };
-  await startSession(data, name);
+  if (!ok) return toError(data, "Signup failed");
+  const verify = toVerification(data);
+  if (!verify) return { error: "Signup failed" };
+  return { verify };
+}
+
+export async function verifyEmailAction(verificationId: string, code: string): Promise<AuthResult> {
+  const { ok, data } = await postAuth("verify-email", { verificationId, code });
+  if (!ok) return toError(data, "Verification failed");
+  await startSession(data, data.user?.name ?? "");
+  return { success: true, isNew: true };
+}
+
+export async function resendCodeAction(verificationId: string): Promise<AuthResult> {
+  const { ok, data } = await postAuth("resend-code", { verificationId });
+  if (!ok) return toError(data, "Could not send a new code");
   return { success: true };
+}
+
+// `credential` is the ID token from the Google sign-in button
+export async function googleSignInAction(credential: string): Promise<AuthResult> {
+  const { ok, data } = await postAuth("google", { credential, language: await getLocale() });
+  if (!ok) return toError(data, "Google sign-in failed");
+  await startSession(data, data.user?.name ?? "");
+  return { success: true, isNew: Boolean(data.isNew) };
 }
 
 export async function logoutAction() {

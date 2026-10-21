@@ -171,7 +171,31 @@
     "haveAccount": "Already have an account?",
     "signInLink": "Sign in",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "or": "or",
+    "googleFailed": "Google sign-in failed. Please try again.",
+    "googleAccount": "This account uses Google sign-in. Use the Google button below.",
+    "googleSigningIn": "Signing in with Google…"
+  },
+  "verify": {
+    "title": "Check your email",
+    "sent": "We sent a 6-digit code to <b>{email}</b>",
+    "codeLabel": "Verification code",
+    "expiry": "The code is valid for 10 minutes. Check your spam folder if you don't see it.",
+    "verifying": "Verifying…",
+    "submit": "Verify email",
+    "resend": "Send a new code",
+    "resendIn": "Send a new code in {seconds}s",
+    "sending": "Sending…",
+    "resent": "A new code has been sent to your email.",
+    "differentEmail": "Use a different email",
+    "errors": {
+      "length": "Enter the 6-digit code",
+      "wrong": "Incorrect code. {left, plural, one {# try} other {# tries}} left.",
+      "expired": "This code has expired. Send a new code.",
+      "tooMany": "Too many incorrect tries. Send a new code.",
+      "signupExpired": "This signup has expired. Please sign up again."
+    }
   },
   "language": {
     "label": "Language"
@@ -786,7 +810,12 @@
       "length": "Use at least {min} characters",
       "different": "New password must be different",
       "match": "Passwords don't match"
-    }
+    },
+    "setTitle": "Set a password",
+    "setSubtitle": "You sign in with Google. Set a password to also sign in with your email address.",
+    "setting": "Saving…",
+    "setSubmit": "Set password",
+    "setSuccess": "Password set. You can now also sign in with your email and password."
   },
   "languagePage": {
     "title": "Language & Region",
