@@ -7,6 +7,7 @@ import { BrandMark, Wordmark } from "@/components/Brand";
 import { useTranslations } from "next-intl";
 import { loginAction } from "@/lib/auth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,8 +23,13 @@ export default function LoginPage() {
     e.preventDefault();
     setError(""); setLoading(true);
     const result = await loginAction(email, password);
+    if (result.verify) {
+      // Signed up but never verified: a new code was sent
+      const { id, email: to, wait } = result.verify;
+      return router.push(`/verify-email?${new URLSearchParams({ id, email: to, wait: String(wait) })}`);
+    }
     setLoading(false);
-    if (result.error) return setError(result.error);
+    if (result.error !== undefined) return setError(result.code === "GOOGLE_ACCOUNT" ? t("googleAccount") : result.error);
     router.push("/dashboard");
     router.refresh();
   };
@@ -73,6 +79,8 @@ export default function LoginPage() {
               {loading ? t("signingIn") : t("signIn")}
             </button>
           </form>
+
+          <GoogleSignInButton text="signin_with" />
 
           <p className="text-center text-sm text-gray-500 mt-4">
             {t("noAccount")}{" "}

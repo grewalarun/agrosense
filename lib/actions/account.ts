@@ -21,7 +21,7 @@ export async function updateProfileAction(input: { name: string; phone: string }
 }
 
 // Sends this device's refresh token so the backend keeps this session and signs out the rest
-export async function changePasswordAction(input: { currentPassword: string; newPassword: string }): Promise<Result<{ message: string }>> {
+export async function changePasswordAction(input: { currentPassword?: string; newPassword: string }): Promise<Result<{ message: string }>> {
   const refreshToken = (await cookies()).get(REFRESH_COOKIE)?.value;
   return run(() =>
     apiFetch<{ message: string }>("/auth/change-password", { method: "POST", body: { ...input, refreshToken } })
