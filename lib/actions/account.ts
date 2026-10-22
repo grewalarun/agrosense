@@ -42,3 +42,9 @@ export async function setLanguageAction(locale: string): Promise<Result<null>> {
   revalidatePath("/", "layout");
   return { data: null };
 }
+
+export async function setEmailOptOutAction(emailOptOut: boolean): Promise<Result<{ user: User }>> {
+  const result = await run(() => apiFetch<{ user: User }>("/auth/me", { method: "PATCH", body: { emailOptOut } }));
+  if (result.error === undefined) revalidatePath("/settings/notifications");
+  return result;
+}

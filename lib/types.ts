@@ -17,6 +17,7 @@ export type User = {
   hasPassword?: boolean;
   hasGoogle?: boolean;
   role?: "user" | "superadmin";
+  emailOptOut?: boolean;
   createdOn: string;
 };
 
@@ -251,3 +252,26 @@ export type FieldReport = {
   totals: ReportTotals;
   cycles: CycleRow[];
 };
+
+// Admin email messages (/api/admin/messages)
+export type MessageStatus = "DRAFT" | "SENDING" | "SENT" | "PARTIAL" | "FAILED";
+export type MessageAudience =
+  | { type: "all" }
+  | { type: "users"; userIds: string[] }
+  | { type: "group"; language?: string; state?: string; hasActiveCycle?: boolean; signedUpWithinDays?: number };
+export type AdminMessage = {
+  id: string;
+  channels: string[];
+  subject: string;
+  body: string;
+  audience: MessageAudience;
+  status: MessageStatus;
+  targeted: number;
+  sent: number;
+  failed: number;
+  pending: number;
+  createdAt: string;
+  sentAt?: string;
+};
+export type AdminMessageList = { page: number; limit: number; total: number; dailyCap: number; sentToday: number; messages: AdminMessage[] };
+export type AudiencePreview = { count: number; sample: { name: string; email: string }[]; dailyCap: number; sentToday: number };
