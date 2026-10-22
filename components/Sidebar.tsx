@@ -5,7 +5,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Sprout, MapPin, RefreshCw, DollarSign,
   Wheat, ShoppingCart, BarChart2, CalendarDays, Settings,
-  LogOut, Menu, X
+  LogOut, Menu, X, Users, Activity
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { logoutAction } from "@/lib/auth";
@@ -13,7 +13,7 @@ import { BrandIcon, Wordmark } from "@/components/Brand";
 
 // Farm-specific links point at the farm being viewed, or the user's first farm.
 // Labels are keys in the "nav" messages.
-function buildNav(farmId: string | null) {
+function buildNav(farmId: string | null, isAdmin: boolean) {
   const farmLink = (path: string) => (farmId ? `/farms/${farmId}${path}` : "/farms");
   return [
     { label: "overview" as const, items: [
@@ -35,6 +35,12 @@ function buildNav(farmId: string | null) {
         { href: farmLink("/planning"), icon: CalendarDays, label: "planning" as const },
       ]},
     ] : []),
+    ...(isAdmin ? [
+      { label: "admin" as const, items: [
+        { href: "/admin", icon: Activity, label: "analytics" as const, exact: true },
+        { href: "/admin/users", icon: Users, label: "users" as const },
+      ]},
+    ] : []),
     { label: "account" as const, items: [
       { href: "/settings", icon: Settings, label: "settings" as const },
     ]},
@@ -51,15 +57,16 @@ function PendingDot() {
 }
 
 // `loading`: rendered as the Suspense fallback while the user's name and farms load
-export default function Sidebar({ userName, defaultFarmId, loading = false }: {
+export default function Sidebar({ userName, defaultFarmId, isAdmin = false, loading = false }: {
   userName: string;
   defaultFarmId: string | null;
+  isAdmin?: boolean;
   loading?: boolean;
 }) {
   const pathname = usePathname();
   const params = useParams();
   const farmId = (params.farmId as string | undefined) ?? defaultFarmId;
-  const nav = buildNav(farmId);
+  const nav = buildNav(farmId, isAdmin);
   const t = useTranslations("nav");
   const tc = useTranslations("common");
   const router = useRouter();
@@ -95,7 +102,8 @@ export default function Sidebar({ userName, defaultFarmId, loading = false }: {
             <p className="text-primary-400 text-xs font-semibold px-3 mb-1 tracking-wider">{t(section.label)}</p>
             <div className="space-y-0.5">
               {section.items.map(item => {
-                const active = pathname === item.href || pathname.startsWith(item.href + "/");
+                const exact = "exact" in item && item.exact;
+                const active = pathname === item.href || (!exact && pathname.startsWith(item.href + "/"));
                 return (
                   <Link
                     key={item.href}
