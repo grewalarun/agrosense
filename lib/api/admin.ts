@@ -1,7 +1,7 @@
 import "server-only";
 import { apiFetch as rawFetch, orNotFound } from "@/lib/dal";
 import type {
-  AdminActivity, AdminBreakdowns, AdminOverview, AdminPlatform, AdminPlatforms, AdminSignups, AdminUserList,
+  AdminActivity, AdminBreakdowns, AdminOverview, AdminPlatform, AdminPlatforms, AdminSignups, AdminUserList, AdminMessage, AdminMessageList, AudiencePreview, MessageAudience,
 } from "@/lib/types";
 
 // A non-admin (403) gets the 404 page, also when a page's data request is faster than the layout check
@@ -46,4 +46,16 @@ export async function getAdminDashboard(days: RangeDays, platform?: AdminPlatfor
 
 export function getAdminUsers(query: { search?: string; status?: string; platform?: string; page?: number }) {
   return apiFetch<AdminUserList>("/admin/users", { query: { ...query, limit: 20 } });
+}
+
+export function getAdminMessages(page: number) {
+  return apiFetch<AdminMessageList>("/admin/messages", { query: { page, limit: 20 } });
+}
+
+export function getAdminMessage(id: string) {
+  return apiFetch<{ message: AdminMessage; failures: { _id: string; name?: string; address: string; error?: string }[] }>(`/admin/messages/${id}`);
+}
+
+export function previewAudience(audience: MessageAudience) {
+  return apiFetch<AudiencePreview>("/admin/messages/audience", { method: "POST", body: { audience } });
 }

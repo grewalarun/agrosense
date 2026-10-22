@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import TopBar from "@/components/TopBar";
-import { User, Shield, Globe, HelpCircle, ChevronRight, Phone, Mail, Send } from "lucide-react";
+import { User, Shield, Globe, HelpCircle, ChevronRight, Phone, Mail, Send, Bell } from "lucide-react";
 import { getMe } from "@/lib/api/account";
 import { getFormatters } from "@/i18n/server";
 import { LOCALE_NAMES } from "@/i18n/config";
@@ -21,6 +21,7 @@ export default async function SettingsPage() {
     {
       title: t("preferences"),
       items: [
+        { href: "/settings/notifications", icon: Bell, label: t("notifications"), desc: t("notificationsDesc"), color: "bg-purple-100 text-purple-600" },
         { href: "/settings/language", icon: Globe, label: t("language"), desc: t("languageDesc", { language: LOCALE_NAMES[locale].native }), color: "bg-green-100 text-green-600" },
       ],
     },

@@ -143,7 +143,8 @@
     "settings": "सेटिंग्स",
     "admin": "एडमिन",
     "analytics": "विश्लेषण",
-    "users": "उपयोगकर्ता"
+    "users": "उपयोगकर्ता",
+    "messages": "ईमेल"
   },
   "farmTabs": {
     "overview": "सारांश",
@@ -781,7 +782,9 @@
     "edit": "बदलें",
     "footer": "FarmPaisa v1.0.0 · भारतीय किसानों के लिए 🇮🇳",
     "emailTest": "टेस्ट ईमेल भेजें",
-    "emailTestDesc": "जांचें कि ईमेल भेजना काम कर रहा है"
+    "emailTestDesc": "जांचें कि ईमेल भेजना काम कर रहा है",
+    "notifications": "घोषणा वाले ईमेल",
+    "notificationsDesc": "तय करें कि FarmPaisa आपको खबरें और अपडेट ईमेल कर सके या नहीं"
   },
   "profile": {
     "title": "प्रोफ़ाइल",
@@ -935,7 +938,8 @@
     "harvestSell": "कटाई और बिक्री",
     "dashboard": "डैशबोर्ड",
     "admin": "विश्लेषण",
-    "adminUsers": "उपयोगकर्ता"
+    "adminUsers": "उपयोगकर्ता",
+    "adminMessages": "ईमेल"
   },
   "planning": {
     "title": "योजना",
@@ -1048,6 +1052,90 @@
     "optedOut": "ईमेल से सदस्यता हटाई",
     "viaGoogle": "Google",
     "viaPassword": "पासवर्ड",
-    "privacyNote": "केवल कुल आँकड़े। किसानों के निजी रिकॉर्ड यहाँ नहीं दिखाए जाते।"
+    "privacyNote": "केवल कुल आँकड़े। किसानों के निजी रिकॉर्ड यहाँ नहीं दिखाए जाते।",
+    "emailUser": "ईमेल"
+  },
+  "notifications": {
+    "title": "घोषणा वाले ईमेल",
+    "heading": "खबरें और अपडेट ईमेल से",
+    "description": "FarmPaisa कभी-कभी किसानों को सुझाव, खबरें और अपडेट ईमेल करता है। आपके खाते से जुड़े ईमेल, जैसे सत्यापन कोड, हमेशा भेजे जाते हैं।",
+    "on": "आपको घोषणा वाले ईमेल मिलते हैं",
+    "off": "आपको घोषणा वाले ईमेल नहीं मिलते",
+    "turnOn": "चालू करें",
+    "turnOff": "बंद करें",
+    "saved": "सहेजा गया"
+  },
+  "adminMessages": {
+    "title": "ईमेल",
+    "newTitle": "नया ईमेल",
+    "detailTitle": "ईमेल का विवरण",
+    "new": "नया ईमेल",
+    "empty": "अभी कोई ईमेल नहीं। पहला ईमेल लिखें।",
+    "colSubject": "विषय",
+    "colAudience": "प्राप्तकर्ता",
+    "colStatus": "स्थिति",
+    "colSent": "भेजे गए",
+    "colDate": "बनाया गया",
+    "dailyLimit": "पिछले 24 घंटों में भेजे गए: {used} / {cap}",
+    "status": {
+      "DRAFT": "ड्राफ़्ट",
+      "SENDING": "भेजा जा रहा है",
+      "SENT": "भेज दिया",
+      "PARTIAL": "आंशिक रूप से भेजा",
+      "FAILED": "विफल"
+    },
+    "audienceAll": "सभी उपयोगकर्ता",
+    "audienceUsers": "{count, plural, one {# चुना हुआ उपयोगकर्ता} other {# चुने हुए उपयोगकर्ता}}",
+    "audienceGroup": "समूह",
+    "to": "किसे भेजें",
+    "toAll": "सभी उपयोगकर्ता",
+    "toGroup": "एक समूह",
+    "toUsers": "चुने हुए उपयोगकर्ता",
+    "language": "भाषा",
+    "anyLanguage": "कोई भी भाषा",
+    "state": "राज्य",
+    "statePlaceholder": "जैसे पंजाब",
+    "hasActiveCycle": "जिनका फसल चक्र चालू है",
+    "signedUpWithin": "पिछले इतने दिनों में जुड़े (दिन)",
+    "daysPlaceholder": "जैसे 30",
+    "groupHint": "उपयोगकर्ता को आपके सभी फ़िल्टर पूरे करने होंगे। किसी फ़िल्टर को अनदेखा करने के लिए उसे खाली छोड़ें।",
+    "searchUsers": "नाम, ईमेल या फ़ोन से खोजें",
+    "noResults": "कोई उपयोगकर्ता नहीं मिला",
+    "remove": "{name} हटाएँ",
+    "writingTo": "{name} को लिख रहे हैं",
+    "subject": "विषय",
+    "subjectPlaceholder": "विषय पंक्ति",
+    "body": "संदेश",
+    "bodyPlaceholder": "अपना संदेश लिखें",
+    "mergeHint": "विषय या संदेश में व्यक्ति का नाम डालने के लिए {tag} लिखें।",
+    "recipients": "{count, plural, =0 {कोई मेल नहीं खाता} one {# व्यक्ति को मिलेगा} other {# लोगों को मिलेगा}}",
+    "counting": "गिना जा रहा है…",
+    "overLimit": "यह रोज़ की सीमा {cap} ईमेल से ज़्यादा है (पिछले 24 घंटों में {used} भेजे जा चुके हैं)।",
+    "sendTest": "मुझे टेस्ट भेजें",
+    "testSent": "टेस्ट ईमेल {to} को भेजा गया",
+    "saveDraft": "ड्राफ़्ट सहेजें",
+    "saved": "ड्राफ़्ट सहेजा गया",
+    "send": "भेजें",
+    "sending": "भेजा जा रहा है… {sent} / {total}",
+    "confirmSend": "यह ईमेल {count, plural, one {# व्यक्ति} other {# लोगों}} को भेजें? इसे वापस नहीं लिया जा सकता।",
+    "confirm": "हाँ, भेजें",
+    "cancel": "रद्द करें",
+    "done": "पूरा हुआ: {sent} भेजे गए, {failed} विफल।",
+    "sentSummary": "{sent} भेजे गए, {failed} विफल, {pending} प्रतीक्षा में",
+    "continue": "भेजना जारी रखें",
+    "retryFailed": "विफल को दोबारा भेजें",
+    "failures": "विफल ईमेल",
+    "delete": "ड्राफ़्ट हटाएँ",
+    "confirmDelete": "यह ड्राफ़्ट हटाएँ?",
+    "back": "ईमेल पर वापस",
+    "created": "बनाया गया {date}",
+    "sentOn": "भेजा गया {date}",
+    "preview": "संदेश",
+    "errors": {
+      "subject": "विषय लिखें",
+      "body": "संदेश लिखें",
+      "group": "कम से कम एक फ़िल्टर चुनें",
+      "users": "कम से कम एक उपयोगकर्ता चुनें"
+    }
   }
 }

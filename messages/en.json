@@ -143,7 +143,8 @@
     "settings": "Settings",
     "admin": "ADMIN",
     "analytics": "Analytics",
-    "users": "Users"
+    "users": "Users",
+    "messages": "Emails"
   },
   "farmTabs": {
     "overview": "Overview",
@@ -781,7 +782,9 @@
     "edit": "Edit",
     "footer": "FarmPaisa v1.0.0 · Made for Indian Farmers 🇮🇳",
     "emailTest": "Send test email",
-    "emailTestDesc": "Check that email sending works"
+    "emailTestDesc": "Check that email sending works",
+    "notifications": "Announcement emails",
+    "notificationsDesc": "Choose whether FarmPaisa can email you news and updates"
   },
   "profile": {
     "title": "Profile",
@@ -935,7 +938,8 @@
     "harvestSell": "Harvest & Sell",
     "dashboard": "Dashboard",
     "admin": "Analytics",
-    "adminUsers": "Users"
+    "adminUsers": "Users",
+    "adminMessages": "Emails"
   },
   "planning": {
     "title": "Planning",
@@ -1048,6 +1052,90 @@
     "optedOut": "Unsubscribed from emails",
     "viaGoogle": "Google",
     "viaPassword": "Password",
-    "privacyNote": "Totals only. Individual farm records are not shown here."
+    "privacyNote": "Totals only. Individual farm records are not shown here.",
+    "emailUser": "Email"
+  },
+  "notifications": {
+    "title": "Announcement emails",
+    "heading": "News and updates by email",
+    "description": "FarmPaisa sometimes emails farmers tips, news and updates. Emails about your account, such as verification codes, are always sent.",
+    "on": "You get announcement emails",
+    "off": "You do not get announcement emails",
+    "turnOn": "Turn on",
+    "turnOff": "Turn off",
+    "saved": "Saved"
+  },
+  "adminMessages": {
+    "title": "Emails",
+    "newTitle": "New email",
+    "detailTitle": "Email details",
+    "new": "New email",
+    "empty": "No emails yet. Write the first one.",
+    "colSubject": "Subject",
+    "colAudience": "To",
+    "colStatus": "Status",
+    "colSent": "Sent",
+    "colDate": "Created",
+    "dailyLimit": "Sent in the last 24 hours: {used} of {cap}",
+    "status": {
+      "DRAFT": "Draft",
+      "SENDING": "Sending",
+      "SENT": "Sent",
+      "PARTIAL": "Partly sent",
+      "FAILED": "Failed"
+    },
+    "audienceAll": "All users",
+    "audienceUsers": "{count, plural, one {# selected user} other {# selected users}}",
+    "audienceGroup": "Group",
+    "to": "Send to",
+    "toAll": "All users",
+    "toGroup": "A group",
+    "toUsers": "Chosen users",
+    "language": "Language",
+    "anyLanguage": "Any language",
+    "state": "State",
+    "statePlaceholder": "e.g. Punjab",
+    "hasActiveCycle": "Has an active crop cycle",
+    "signedUpWithin": "Signed up in the last (days)",
+    "daysPlaceholder": "e.g. 30",
+    "groupHint": "Users must match every filter you set. Leave a filter empty to ignore it.",
+    "searchUsers": "Search by name, email or phone",
+    "noResults": "No matching users",
+    "remove": "Remove {name}",
+    "writingTo": "Writing to {name}",
+    "subject": "Subject",
+    "subjectPlaceholder": "Subject line",
+    "body": "Message",
+    "bodyPlaceholder": "Write your message",
+    "mergeHint": "Use {tag} to put the person's name in the subject or message.",
+    "recipients": "{count, plural, =0 {Nobody matches} one {# person will get this} other {# people will get this}}",
+    "counting": "Counting…",
+    "overLimit": "This is over the daily limit of {cap} emails ({used} already sent in the last 24 hours).",
+    "sendTest": "Send test to me",
+    "testSent": "Test email sent to {to}",
+    "saveDraft": "Save draft",
+    "saved": "Draft saved",
+    "send": "Send",
+    "sending": "Sending… {sent} of {total}",
+    "confirmSend": "Send this email to {count, plural, one {# person} other {# people}}? It cannot be undone.",
+    "confirm": "Yes, send",
+    "cancel": "Cancel",
+    "done": "Done: {sent} sent, {failed} failed.",
+    "sentSummary": "{sent} sent, {failed} failed, {pending} waiting",
+    "continue": "Continue sending",
+    "retryFailed": "Retry failed",
+    "failures": "Failed emails",
+    "delete": "Delete draft",
+    "confirmDelete": "Delete this draft?",
+    "back": "Back to emails",
+    "created": "Created {date}",
+    "sentOn": "Sent {date}",
+    "preview": "Message",
+    "errors": {
+      "subject": "Enter a subject",
+      "body": "Enter a message",
+      "group": "Set at least one filter",
+      "users": "Pick at least one user"
+    }
   }
 }

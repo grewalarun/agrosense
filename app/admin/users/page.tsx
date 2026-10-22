@@ -88,6 +88,12 @@ export default async function AdminUsersPage(props: { searchParams: Promise<User
                       <td className="p-3">
                         <div className="flex items-center gap-2">
                           <span className={u.status === "enabled" ? "badge-active" : "badge-empty"}>{u.status === "enabled" ? t("enabled") : t("disabled")}</span>
+                          {u.status === "enabled" && !u.emailOptOut && (
+                            <Link href={`/admin/messages/new?user=${u.id}&name=${encodeURIComponent(u.name)}`}
+                              className="text-xs font-medium px-2.5 py-1 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+                              {t("emailUser")}
+                            </Link>
+                          )}
                           {!u.isAdmin && <UserStatusButton userId={u.id} name={u.name} status={u.status} />}
                         </div>
                       </td>

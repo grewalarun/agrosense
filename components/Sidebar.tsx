@@ -5,7 +5,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Sprout, MapPin, RefreshCw, DollarSign,
   Wheat, ShoppingCart, BarChart2, CalendarDays, Settings,
-  LogOut, Menu, X, Users, Activity
+  LogOut, Menu, X, Users, Activity, Mail
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { logoutAction } from "@/lib/auth";
@@ -39,6 +39,7 @@ function buildNav(farmId: string | null, isAdmin: boolean) {
       { label: "admin" as const, items: [
         { href: "/admin", icon: Activity, label: "analytics" as const, exact: true },
         { href: "/admin/users", icon: Users, label: "users" as const },
+        { href: "/admin/messages", icon: Mail, label: "messages" as const },
       ]},
     ] : []),
     { label: "account" as const, items: [
