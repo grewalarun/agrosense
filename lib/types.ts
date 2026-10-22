@@ -16,8 +16,58 @@ export type User = {
   // false for accounts that only sign in with Google
   hasPassword?: boolean;
   hasGoogle?: boolean;
+  role?: "user" | "superadmin";
   createdOn: string;
 };
+
+// Responses of the super-admin API (/api/admin/*)
+export type AdminPlatform = "web" | "android" | "ios";
+
+export type AdminOverview = {
+  range: { from: string; to: string };
+  users: { total: number; new: number; active: number; disabled: number };
+  farms: number;
+  fields: number;
+  crops: number;
+  cyclesByStatus: Record<string, number>;
+  area: { unit: string; area: number }[];
+  expenses: { amount: number; count: number };
+  harvests: { unit: string; quantity: number; count: number }[];
+  sales: { revenue: number; count: number };
+};
+
+export type AdminSignups = { days: { date: string; total: number; google: number; password: number }[] };
+export type AdminActivity = { days: { date: string; expenses: number; harvests: number; sales: number }[] };
+export type AdminBreakdownRow = { label: string; count: number };
+export type AdminBreakdowns = {
+  crops: AdminBreakdownRow[];
+  seasons: AdminBreakdownRow[];
+  languages: AdminBreakdownRow[];
+  states: AdminBreakdownRow[];
+  districts: AdminBreakdownRow[];
+};
+export type AdminPlatforms = {
+  users: Record<AdminPlatform | "unknown", number>;
+  appVersions: { platform: string; version: string; count: number }[];
+};
+
+export type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  language?: string;
+  status: "enabled" | "disabled";
+  isAdmin: boolean;
+  emailOptOut: boolean;
+  signIn: ("password" | "google")[];
+  platform?: AdminPlatform;
+  farms: number;
+  lastActiveAt?: string;
+  lastRecordAt?: string;
+  createdOn: string;
+};
+export type AdminUserList = { page: number; limit: number; total: number; users: AdminUser[] };
 
 export type Location = { village?: string; district?: string; state?: string; pincode?: string };
 
