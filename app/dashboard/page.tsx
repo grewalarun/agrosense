@@ -126,7 +126,8 @@ export default async function DashboardPage() {
         {latest && (
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{t("latestSeason", { season: f.season(latest.seasonType, latest.seasonYear) })}</p>
-            <div className="grid grid-cols-3 gap-3">
+            {/* On phones the profit gets its own row: three amounts don't fit side by side */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div className="card p-4">
                 <p className="text-xs text-gray-500 flex items-center gap-1"><TrendingUp size={11} className="text-primary-500" />{t("revenue")}</p>
                 <p className="text-lg sm:text-xl font-bold whitespace-nowrap tabular-nums text-gray-800 mt-0.5">{fmt(latest.revenue)}</p>
@@ -135,7 +136,7 @@ export default async function DashboardPage() {
                 <p className="text-xs text-gray-500 flex items-center gap-1"><TrendingDown size={11} className="text-red-400" />{t("expenses")}</p>
                 <p className="text-lg sm:text-xl font-bold whitespace-nowrap tabular-nums text-gray-800 mt-0.5">{fmt(latest.expenses)}</p>
               </div>
-              <div className="card p-4 border-accent-200 bg-accent-50">
+              <div className="card p-4 border-accent-200 bg-accent-50 col-span-2 sm:col-span-1">
                 <p className="text-xs text-accent-700 font-medium">{t("netProfit")}</p>
                 <p className={`text-lg sm:text-xl font-bold whitespace-nowrap tabular-nums mt-0.5 ${latest.profit >= 0 ? "text-primary-700" : "text-red-600"}`}>{signedFmt(latest.profit)}</p>
               </div>
