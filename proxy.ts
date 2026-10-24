@@ -9,7 +9,8 @@ import {
   refreshAccessToken,
 } from "@/lib/session";
 
-const AUTH_PAGES = ["/login", "/signup", "/verify-email", "/forgot-password", "/reset-password"];
+// Pages for signed-out visitors (the landing page and sign-in screens); signed-in users go to the dashboard
+const AUTH_PAGES = ["/", "/login", "/signup", "/verify-email", "/forgot-password", "/reset-password"];
 
 // Runs before every page and Server Function call. Access tokens live 15 minutes,
 // so when one is about to expire it is refreshed here: Server Components can't set
