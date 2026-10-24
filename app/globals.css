@@ -229,3 +229,23 @@ body {
   .skeleton { animation: none; }
   .nav-progress[data-state="loading"] { animation: none; width: 70%; }
 }
+
+/* Landing page: display font on headings, and a short fade-up as the hero appears */
+.landing :is(h1, h2, h3),
+.landing .font-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+.fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .fade-up { animation: none; }
+}

@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { Plus, TrendingUp } from "lucide-react";
+import { Plus } from "lucide-react";
 import { getFormatters } from "@/i18n/server";
 import { EXPENSE_CATEGORIES } from "@/lib/format";
 import { COMMON_CROPS } from "@/lib/crops";
@@ -7,7 +7,7 @@ import type { ExpenseCategory } from "@/lib/types";
 
 // Simplified, app-like screens for the landing page. The numbers are a made-up example
 // farm that adds up: Rabi 2025-26 is the finished season, Rabi 2026-27 the current one.
-// Screen readers get one sentence instead (see the hero's mockLabel); these are aria-hidden.
+// They are aria-hidden: the text next to each one says the same in words.
 
 const LAST_SEASON = "2025-26";
 const THIS_SEASON = "2026-27";
@@ -32,57 +32,6 @@ const LOSS = "#be185d";
 async function load() {
   const [t, f] = await Promise.all([getTranslations("landing.mock"), getFormatters()]);
   return { t, f };
-}
-
-// Dashboard in a phone frame, with a floating crop-profit card
-export async function PhoneMock() {
-  const { t, f } = await load();
-  return (
-    <div aria-hidden className="relative mx-auto w-[280px] sm:w-[300px] select-none">
-      <div className="rounded-[2.25rem] bg-gray-900 p-2.5 shadow-2xl shadow-primary-900/20">
-        <div className="rounded-[1.75rem] bg-bg overflow-hidden">
-          <div className="bg-primary-800 px-4 pt-5 pb-14 text-white">
-            <p className="text-[11px] text-primary-200">{t("greeting")}</p>
-            <p className="text-sm font-semibold mt-0.5">{t("season", { season: f.season("RABI", LAST_SEASON) })}</p>
-          </div>
-          <div className="px-3 -mt-11 space-y-2.5 pb-4">
-            <div className="card p-3.5">
-              <p className="text-[11px] text-gray-500">{t("profit")}</p>
-              <p className="text-2xl font-extrabold text-primary-700">{f.signed(EARNED - INVESTED)}</p>
-              <div className="mt-2 grid grid-cols-2 gap-2 text-[11px]">
-                <div className="rounded-lg bg-gray-50 px-2 py-1.5">
-                  <p className="text-gray-500">{t("invested")}</p>
-                  <p className="font-semibold text-gray-800">{f.money(INVESTED)}</p>
-                </div>
-                <div className="rounded-lg bg-gray-50 px-2 py-1.5">
-                  <p className="text-gray-500">{t("earned")}</p>
-                  <p className="font-semibold text-gray-800">{f.money(EARNED)}</p>
-                </div>
-              </div>
-            </div>
-            <p className="text-[11px] font-semibold text-gray-500 px-1 pt-1">{t("activeCrops")} · {f.season("RABI", THIS_SEASON)}</p>
-            {[{ crop: "Potato", field: 1, invested: 6000, target: 120 }, { crop: "Wheat", field: 2, invested: 3400, target: 40 }].map((c) => (
-              <div key={c.crop} className="card p-3 flex items-center gap-2.5">
-                <span className="w-9 h-9 rounded-xl bg-primary-50 flex items-center justify-center text-lg shrink-0">{emoji(c.crop)}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-gray-800 truncate">{f.crop(c.crop)} · {t("field", { n: c.field })}</p>
-                  <p className="text-[11px] text-gray-500 truncate">{t("target", { qty: `${c.target} ${f.unit("QTL")}` })}</p>
-                </div>
-                <p className="text-xs font-semibold text-gray-700 shrink-0">{f.money(c.invested)}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="absolute -right-6 sm:-right-12 top-24 card px-3 py-2 shadow-lg flex items-center gap-2 rotate-3">
-        <span className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center text-primary-700"><TrendingUp size={14} /></span>
-        <div>
-          <p className="text-[10px] text-gray-500 leading-none">{emoji("Wheat")} {f.crop("Wheat")}</p>
-          <p className="text-sm font-bold text-primary-700 leading-tight">{f.signed(69000 - 5200)}</p>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 // Crop cycle cards: one growing, one harvested
