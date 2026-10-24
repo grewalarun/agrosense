@@ -1,13 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, MailCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Spinner from "@/components/Spinner";
+import { CODE_LENGTH, CodeInput, ResendButton, useCodeErrorText, useCountdown } from "@/components/CodeEntry";
 import { type AuthResult, resendCodeAction, verifyEmailAction } from "@/lib/auth";
-
-const CODE_LENGTH = 6;
 
 export default function VerifyForm({ verificationId, email, initialWait }: {
   verificationId: string; email: string; initialWait: number;
@@ -20,24 +19,11 @@ export default function VerifyForm({ verificationId, email, initialWait }: {
   const [notice, setNotice] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [sending, setSending] = useState(false);
-  const [wait, setWait] = useState(initialWait);
+  const [wait, setWait] = useCountdown(initialWait);
+  const codeErrorText = useCodeErrorText();
 
-  // Counts down to when "Send a new code" can be used again
-  useEffect(() => {
-    if (wait <= 0) return;
-    const timer = setTimeout(() => setWait(w => w - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [wait]);
-
-  const errorText = (result: Extract<AuthResult, { error: string }>) => {
-    switch (result.code) {
-      case "WRONG_CODE": return t("errors.wrong", { left: result.attemptsLeft ?? 0 });
-      case "CODE_EXPIRED": return t("errors.expired");
-      case "TOO_MANY_ATTEMPTS": return t("errors.tooMany");
-      case "SIGNUP_EXPIRED": return t("errors.signupExpired");
-      default: return result.error;
-    }
-  };
+  const errorText = (result: Extract<AuthResult, { error: string }>) =>
+    result.code === "SIGNUP_EXPIRED" ? t("errors.signupExpired") : codeErrorText(result);
 
   const verify = async (value: string) => {
     if (value.length !== CODE_LENGTH) return setError(t("errors.length"));
@@ -54,8 +40,7 @@ export default function VerifyForm({ verificationId, email, initialWait }: {
     router.refresh();
   };
 
-  const onChange = (raw: string) => {
-    const value = raw.replace(/\D/g, "").slice(0, CODE_LENGTH);
+  const onChange = (value: string) => {
     setCode(value);
     setError("");
     // Submit as soon as the last digit is typed or pasted
@@ -100,10 +85,7 @@ export default function VerifyForm({ verificationId, email, initialWait }: {
         </div>
       )}
 
-      <label htmlFor="code" className="block text-xs font-medium text-gray-600 mb-1">{t("codeLabel")}</label>
-      <input id="code" name="code" value={code} onChange={e => onChange(e.target.value)}
-        inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={CODE_LENGTH} autoFocus
-        className="input text-center text-2xl font-bold tracking-[0.5em] pl-[calc(0.75rem+0.5em)] py-3" placeholder="••••••" aria-describedby="code-help" />
+      <CodeInput value={code} onChange={onChange} autoFocus describedBy="code-help" />
 
       <button type="submit" disabled={verifying}
         className="btn-primary w-full justify-center py-2.5 mt-4 disabled:opacity-60 disabled:cursor-not-allowed">
@@ -111,10 +93,7 @@ export default function VerifyForm({ verificationId, email, initialWait }: {
       </button>
 
       <div id="code-help" className="mt-4 flex flex-col items-center gap-2 text-sm">
-        <button type="button" onClick={resend} disabled={wait > 0 || sending}
-          className="text-primary-600 font-medium hover:underline disabled:text-gray-400 disabled:no-underline disabled:cursor-not-allowed">
-          {sending ? t("sending") : wait > 0 ? t("resendIn", { seconds: wait }) : t("resend")}
-        </button>
+        <ResendButton wait={wait} sending={sending} onClick={resend} />
         <Link href="/signup" className="text-gray-500 hover:underline">{t("differentEmail")}</Link>
       </div>
     </form>
