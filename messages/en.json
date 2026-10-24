@@ -1161,5 +1161,195 @@
       "group": "Set at least one filter",
       "users": "Pick at least one user"
     }
+  },
+  "landing": {
+    "meta": {
+      "title": "FarmPaisa – Plan. Grow. Analyze.",
+      "description": "Free farm accounts app for Indian farmers. Plan crops by season, record every expense, and see the profit of each crop. In English, Hindi and Punjabi."
+    },
+    "nav": {
+      "label": "Main",
+      "features": "Features",
+      "how": "How it works",
+      "faq": "FAQ",
+      "signIn": "Sign in",
+      "start": "Start free"
+    },
+    "hero": {
+      "plan": "Plan.",
+      "grow": "Grow.",
+      "analyze": "Analyze.",
+      "subtitle": "Track every rupee your farm spends and earns, crop by crop, season by season. Know your real profit before you plan the next crop.",
+      "start": "Start free",
+      "signIn": "I already have an account",
+      "free": "Free to use",
+      "languages": "English, हिंदी, ਪੰਜਾਬੀ",
+      "phone": "Works on your phone",
+      "mockLabel": "Example screen: the FarmPaisa dashboard showing this season's profit, money invested and active crops."
+    },
+    "mock": {
+      "greeting": "Sat Sri Akal, Gurpreet",
+      "season": "{season} season",
+      "profit": "Profit",
+      "invested": "Invested",
+      "earned": "Earned",
+      "activeCrops": "Active crops",
+      "field": "Field {n}",
+      "target": "Target {qty}",
+      "harvested": "{qty} harvested",
+      "unsold": "{qty} unsold",
+      "addExpense": "Add expense",
+      "total": "Total",
+      "seedDesc": "Kufri Jyoti seed",
+      "dapDesc": "DAP 50 kg",
+      "labourDesc": "Sowing labour",
+      "today": "Today",
+      "report": "Season report",
+      "byCrop": "Profit by crop",
+      "net": "Net profit",
+      "loss": "Loss",
+      "profitTag": "Profit",
+      "targetYield": "Target yield"
+    },
+    "pillars": {
+      "heading": "One app for the whole crop season",
+      "subtitle": "From the day you sow to the day you sell, FarmPaisa keeps your farm's accounts in one place.",
+      "plan": {
+        "title": "Plan",
+        "text": "Set up your farm once, then plan every crop.",
+        "p1": "Farms and fields with area, soil and irrigation",
+        "p2": "Start a crop on each field for Rabi, Kharif or Zaid",
+        "p3": "Set a target yield for the season"
+      },
+      "grow": {
+        "title": "Grow",
+        "text": "Write down costs the day you spend.",
+        "p1": "Seeds, fertilizer, labour, tractor and more",
+        "p2": "Every expense linked to its crop",
+        "p3": "Takes a few seconds on your phone"
+      },
+      "analyze": {
+        "title": "Analyze",
+        "text": "See what each crop really earned.",
+        "p1": "Record harvests and sales to any buyer",
+        "p2": "Unsold stock always up to date",
+        "p3": "Profit or loss per crop and per season"
+      }
+    },
+    "rows": {
+      "plan": {
+        "eyebrow": "Plan",
+        "title": "Every field, every crop, every season",
+        "text": "Add your farms and fields, then start a crop cycle on each field. FarmPaisa groups everything by season, so Rabi 2025-26 never mixes with Kharif 2026.",
+        "p1": "One active crop per field, so nothing gets counted twice",
+        "p2": "Area in acres, hectares, bigha or kanal",
+        "p3": "Target yield to compare with the real harvest"
+      },
+      "grow": {
+        "eyebrow": "Grow",
+        "title": "Record expenses the moment you spend",
+        "text": "Bought seed in the morning, paid labour in the evening? Add both in seconds. Each expense is saved against its crop, so the cost of every crop adds up by itself.",
+        "p1": "Ready categories: seeds, fertilizer, pesticide, labour, irrigation, tractor, transport",
+        "p2": "Add a note like \"DAP 50 kg\" so you remember later",
+        "p3": "Fix or delete a wrong entry until the season is closed"
+      },
+      "analyze": {
+        "eyebrow": "Analyze",
+        "title": "Know your real profit, crop by crop",
+        "text": "Record your harvest, sell it in parts to different buyers, and FarmPaisa shows what you earned, what you spent and what is left in stock. Season reports show which crop paid and which didn't.",
+        "p1": "Profit or loss for each crop and each season",
+        "p2": "Unsold stock after every sale",
+        "p3": "Compare seasons to plan the next crop better"
+      }
+    },
+    "more": {
+      "heading": "Made for how Indian farms work",
+      "sales": {
+        "title": "Sell in parts",
+        "text": "Sell one harvest to several buyers on different days. Stock updates after each sale."
+      },
+      "edit": {
+        "title": "Fix mistakes",
+        "text": "Edit or delete a wrong expense or sale until you close the season."
+      },
+      "language": {
+        "title": "Your language",
+        "text": "Use FarmPaisa in English, Hindi or Punjabi, and switch any time."
+      },
+      "secure": {
+        "title": "Safe sign-in",
+        "text": "Email verified with a code, or sign in with Google. Forgot your password? Reset it by email."
+      },
+      "devices": {
+        "title": "Phone and computer",
+        "text": "Works in the browser on any phone or computer. Your data is the same everywhere."
+      },
+      "private": {
+        "title": "Your data is yours",
+        "text": "Only you can see your farms, crops and money. Nothing is shared."
+      }
+    },
+    "steps": {
+      "heading": "How it works",
+      "subtitle": "Start in five minutes. No training needed.",
+      "s1": {
+        "title": "Create a free account",
+        "text": "Sign up with your email or Google."
+      },
+      "s2": {
+        "title": "Add your farm and fields",
+        "text": "Name, area, soil and irrigation."
+      },
+      "s3": {
+        "title": "Start a crop",
+        "text": "Pick the field, crop and season."
+      },
+      "s4": {
+        "title": "Record expenses",
+        "text": "Add each cost the day you spend it."
+      },
+      "s5": {
+        "title": "Harvest, sell, see profit",
+        "text": "Record the harvest and sales, and the profit is ready."
+      }
+    },
+    "faq": {
+      "heading": "Questions farmers ask",
+      "q1": {
+        "q": "Is FarmPaisa free?",
+        "a": "Yes. You can create an account and use all the features for free."
+      },
+      "q2": {
+        "q": "Which languages can I use?",
+        "a": "English, Hindi and Punjabi. Change the language any time from the top of the page or in Settings; your choice is saved on your account."
+      },
+      "q3": {
+        "q": "Can I use it on my phone?",
+        "a": "Yes. FarmPaisa works in the browser on any smartphone, tablet or computer. Nothing to install."
+      },
+      "q4": {
+        "q": "Who can see my data?",
+        "a": "Only you. Your farms, crops, expenses and sales are linked to your account and are not shared with anyone."
+      },
+      "q5": {
+        "q": "What if I enter something wrong?",
+        "a": "You can edit or delete expenses, harvests and sales until you close the season. Then add the right entry again."
+      }
+    },
+    "cta": {
+      "title": "Start keeping your farm's accounts today",
+      "text": "Free, simple, and in your language.",
+      "button": "Create free account"
+    },
+    "footer": {
+      "tagline": "Farm expenses & profit, made simple.",
+      "links": "Links",
+      "signIn": "Sign in",
+      "signUp": "Create account",
+      "features": "Features",
+      "faq": "FAQ",
+      "madeFor": "Made for Indian farmers 🇮🇳",
+      "rights": "© {year} FarmPaisa. All rights reserved."
+    }
   }
 }

@@ -24,6 +24,10 @@
   --color-bg: #faf9f5;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: #faf9f5;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
