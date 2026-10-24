@@ -18,10 +18,12 @@ export default function LoginPage() {
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [wrongPassword, setWrongPassword] = useState(false);
+  const forgotHref = `/forgot-password${email ? `?${new URLSearchParams({ email })}` : ""}`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); setLoading(true);
+    setError(""); setWrongPassword(false); setLoading(true);
     const result = await loginAction(email, password);
     if (result.verify) {
       // Signed up but never verified: a new code was sent
@@ -29,7 +31,10 @@ export default function LoginPage() {
       return router.push(`/verify-email?${new URLSearchParams({ id, email: to, wait: String(wait) })}`);
     }
     setLoading(false);
-    if (result.error !== undefined) return setError(result.code === "GOOGLE_ACCOUNT" ? t("googleAccount") : result.error);
+    if (result.error !== undefined) {
+      setWrongPassword(result.error === "Invalid credentials");
+      return setError(result.code === "GOOGLE_ACCOUNT" ? t("googleAccount") : result.error);
+    }
     router.push("/dashboard");
     router.refresh();
   };
@@ -53,7 +58,10 @@ export default function LoginPage() {
           <p className="text-sm text-gray-500 mb-6">{t("signInSubtitle")}</p>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">{error}</div>
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm" role="alert">
+              {error}
+              {wrongPassword && <> <Link href={forgotHref} className="font-semibold underline">{t("forgotPassword")}</Link></>}
+            </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -63,7 +71,10 @@ export default function LoginPage() {
                 className="input" placeholder="you@example.com" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">{t("password")}</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-medium text-gray-600">{t("password")}</label>
+                <Link href={forgotHref} className="text-xs text-primary-600 font-medium hover:underline">{t("forgotPassword")}</Link>
+              </div>
               <div className="relative">
                 <input type={showPw ? "text" : "password"} required value={password}
                   onChange={e => setPassword(e.target.value)}

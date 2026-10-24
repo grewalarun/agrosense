@@ -17,6 +17,7 @@ type AuthResponse = Tokens & {
   email?: string;
   retryAfter?: number;
   isNew?: boolean;
+  resetId?: string;
 };
 
 // The verify-email page needs these to finish a signup
@@ -101,6 +102,27 @@ export async function googleSignInAction(credential: string): Promise<AuthResult
   if (!ok) return toError(data, "Google sign-in failed");
   await startSession(data, data.user?.name ?? "");
   return { success: true, isNew: Boolean(data.isNew) };
+}
+
+// Forgot password: emails a code; the reset page sends it with the new password
+export async function forgotPasswordAction(email: string): Promise<{ reset: Verification; error?: undefined } | { error: string; code?: string; reset?: undefined }> {
+  const { ok, data } = await postAuth("forgot-password", { email });
+  if (!ok || !data.resetId || !data.email) return { error: data.message || "Could not send the code", code: data.code };
+  return { reset: { id: data.resetId, email: data.email, wait: data.retryAfter ?? 0 } };
+}
+
+export async function resendResetCodeAction(resetId: string): Promise<AuthResult> {
+  const { ok, data } = await postAuth("resend-reset-code", { resetId });
+  if (!ok) return toError(data, "Could not send a new code");
+  return { success: true };
+}
+
+// Sets the new password; the backend signs out every device and logs in this one
+export async function resetPasswordAction(resetId: string, code: string, newPassword: string): Promise<AuthResult> {
+  const { ok, data } = await postAuth("reset-password", { resetId, code, newPassword });
+  if (!ok) return toError(data, "Could not reset the password");
+  await startSession(data, data.user?.name ?? "");
+  return { success: true };
 }
 
 export async function logoutAction() {

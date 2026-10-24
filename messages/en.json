@@ -179,7 +179,8 @@
     "or": "or",
     "googleFailed": "Google sign-in failed. Please try again.",
     "googleAccount": "This account uses Google sign-in. Use the Google button below.",
-    "googleSigningIn": "Signing in with Google…"
+    "googleSigningIn": "Signing in with Google…",
+    "forgotPassword": "Forgot password?"
   },
   "verify": {
     "title": "Check your email",
@@ -199,6 +200,29 @@
       "expired": "This code has expired. Send a new code.",
       "tooMany": "Too many incorrect tries. Send a new code.",
       "signupExpired": "This signup has expired. Please sign up again."
+    }
+  },
+  "forgot": {
+    "title": "Forgot your password?",
+    "subtitle": "Enter your account email. We'll send a 6-digit code to set a new password.",
+    "sending": "Sending code…",
+    "submit": "Send code",
+    "backToLogin": "Back to sign in",
+    "noAccount": "No account with this email.",
+    "createAccount": "Create an account",
+    "resetTitle": "Set a new password",
+    "sent": "Enter the 6-digit code we sent to <b>{email}</b> and choose a new password.",
+    "newPassword": "New password",
+    "confirm": "Confirm new password",
+    "signOutNote": "You'll be signed out on other phones and computers.",
+    "saving": "Saving…",
+    "save": "Save and sign in",
+    "differentEmail": "Use a different email",
+    "errors": {
+      "code": "Enter the 6-digit code",
+      "length": "Use at least {min} characters",
+      "match": "Passwords don't match",
+      "resetExpired": "This reset request has expired. Please start again."
     }
   },
   "language": {
