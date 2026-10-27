@@ -9,6 +9,8 @@ import { BrandIcon, Wordmark } from "@/components/Brand";
 export const metadata: Metadata = {
   title: "Privacy Policy – FarmPaisa",
   description: "What FarmPaisa collects, why, who processes it, and the choices you have.",
+  alternates: { canonical: "/privacy" },
+  openGraph: { title: "Privacy Policy – FarmPaisa", url: "/privacy", siteName: "FarmPaisa", type: "article" },
 };
 
 const LAST_UPDATED = "27 October 2026";
@@ -56,7 +58,7 @@ export default function PrivacyPage() {
           <p className="font-semibold">The short version</p>
           <ul className="mt-2 list-disc pl-5 space-y-1 text-sm">
             <li>We collect your account details and the farm records you enter, so the app can work.</li>
-            <li>We don&apos;t sell your data, show ads, or use tracking or advertising cookies.</li>
+            <li>We don&apos;t sell your data or show ads. We use Google Analytics only to understand how people use the website.</li>
             <li>Your farm records are private to your account.</li>
             <li>You can ask us to delete your account and data at any time.</li>
           </ul>
@@ -90,6 +92,9 @@ export default function PrivacyPage() {
           <p><strong className="text-gray-900">Information created as you use FarmPaisa:</strong> when you signed up, when you were last
             active, whether you last used the website or a mobile app (and its version), your sign-in sessions, and your
             choice about announcement emails.</p>
+          <p><strong className="text-gray-900">Website usage statistics:</strong> Google Analytics records how the website is used, such as
+            which pages are visited, how you arrived (for example from a search), your device and browser type, and your
+            approximate city or region. It doesn&apos;t receive your name, email address or farm records.</p>
           <p><strong className="text-gray-900">Verification codes:</strong> when you sign up or reset your password, we email you a 6-digit code.
             We store only a secure hash of the code, and it expires after 10 minutes.</p>
           <p>We don&apos;t collect your precise location, contacts, photos, payment details or government ID numbers.</p>
@@ -114,7 +119,8 @@ export default function PrivacyPage() {
             <li><strong className="text-gray-900">MongoDB Atlas</strong>: stores the app&apos;s database.</li>
             <li><strong className="text-gray-900">Vercel</strong> and <strong className="text-gray-900">Netlify</strong>: host the FarmPaisa server and website.</li>
             <li><strong className="text-gray-900">Resend</strong>: delivers our emails, so it receives your email address and the email content.</li>
-            <li><strong className="text-gray-900">Google</strong>: only if you choose &quot;Sign in with Google&quot;.</li>
+            <li><strong className="text-gray-900">Google</strong>: if you choose &quot;Sign in with Google&quot;, and for website usage
+              statistics through Google Analytics and Google Tag Manager.</li>
           </ul>
           <p>These providers may store data on servers outside India. We may also share data if the law requires it, for
             example in response to a valid order from a court or government authority.</p>
@@ -125,9 +131,14 @@ export default function PrivacyPage() {
             <li>Sign-in cookies that keep you logged in (a short-lived access token and a sign-in token that lasts up to 30 days).</li>
             <li>A cookie with your display name, so the menu can greet you.</li>
             <li>A cookie that remembers your language.</li>
+            <li>Google Analytics cookies (named <code>_ga</code> and similar), which count visits and tell new visitors
+              from returning ones.</li>
           </ul>
-          <p>We don&apos;t use analytics, advertising or tracking cookies. When you sign in with Google, Google may set its own
-            cookies under Google&apos;s privacy policy.</p>
+          <p>We don&apos;t use advertising cookies. Google handles analytics data under{" "}
+            <a href="https://policies.google.com/privacy" className="text-primary-700 hover:underline" target="_blank" rel="noopener noreferrer">Google&apos;s privacy policy</a>.
+            You can block analytics with your browser&apos;s cookie settings or the{" "}
+            <a href="https://tools.google.com/dlpage/gaoptout" className="text-primary-700 hover:underline" target="_blank" rel="noopener noreferrer">Google Analytics opt-out add-on</a>;
+            the app keeps working. When you sign in with Google, Google may also set its own cookies.</p>
 
           <H2 id="admins">5. Who at FarmPaisa can see your data</H2>
           <p>A small number of FarmPaisa administrators can see account details (name, email, mobile number, language,

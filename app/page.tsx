@@ -3,12 +3,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getImageProps } from "next/image";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import {
   ArrowRight, CheckCircle2, ChevronDown, ClipboardList, IndianRupee, Languages, Lock,
   Pencil, Receipt, ShieldCheck, Smartphone, Sparkles, Sprout, UserPlus, MapPin, Wheat,
 } from "lucide-react";
 import { getUser } from "@/lib/dal";
+import { OG_LOCALES, SITE_NAME, SITE_URL } from "@/lib/site";
 import { BrandIcon, Wordmark } from "@/components/Brand";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { CycleMock, ExpenseMock, ReportMock } from "@/components/landing/Mocks";
@@ -17,12 +18,54 @@ import { CycleMock, ExpenseMock, ReportMock } from "@/components/landing/Mocks";
 const display = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-display", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("landing.meta");
+  const [t, locale] = await Promise.all([getTranslations("landing.meta"), getLocale()]);
   return {
-    title: t("title"),
+    title: { absolute: t("title") },
     description: t("description"),
-    openGraph: { title: t("title"), description: t("description"), siteName: "FarmPaisa", type: "website" },
+    keywords: KEYWORDS,
+    alternates: { canonical: "/" },
+    openGraph: { title: t("title"), description: t("description"), url: "/", siteName: SITE_NAME, type: "website", locale: OG_LOCALES[locale] },
+    twitter: { card: "summary_large_image", title: t("title"), description: t("description") },
   };
+}
+
+const KEYWORDS = [
+  "farm expense tracker", "farm accounting app", "crop profit calculator", "kisan hisab app",
+  "kheti hisab", "farm management app India", "Rabi Kharif crop records", "farmer app Hindi Punjabi",
+];
+
+// Structured data for search engines: who we are, what the app is, and the FAQ
+function jsonLd(t: Awaited<ReturnType<typeof getTranslations<"landing">>>, locale: string) {
+  const data = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "Organization", "@id": `${SITE_URL}/#org`, name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/brand/icon-512.png` },
+      { "@type": "WebSite", "@id": `${SITE_URL}/#website`, name: SITE_NAME, url: SITE_URL, inLanguage: locale, publisher: { "@id": `${SITE_URL}/#org` } },
+      {
+        "@type": "WebApplication",
+        name: SITE_NAME,
+        url: SITE_URL,
+        description: t("meta.description"),
+        applicationCategory: "FinanceApplication",
+        operatingSystem: "Any (web browser)",
+        browserRequirements: "Requires JavaScript",
+        inLanguage: ["en", "hi", "pa"],
+        image: `${SITE_URL}/landing/dashboard-desktop.png`,
+        offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+        publisher: { "@id": `${SITE_URL}/#org` },
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: FAQS.map(q => ({
+          "@type": "Question",
+          name: t(`faq.${q}.q`),
+          acceptedAnswer: { "@type": "Answer", text: t(`faq.${q}.a`) },
+        })),
+      },
+    ],
+  };
+  // Escape "<" so no text can close the script tag
+  return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
 const FACTS = ["languages", "categories", "seasons", "price"] as const;
@@ -65,11 +108,12 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 // Public home page for signed-out visitors; signed-in users go to their dashboard
 export default async function Home() {
   if (await getUser()) redirect("/dashboard");
-  const t = await getTranslations("landing");
+  const [t, locale] = await Promise.all([getTranslations("landing"), getLocale()]);
   const shot = dashboardShot(t("shot.alt"));
 
   return (
     <div className={`${display.variable} landing min-h-screen bg-bg text-gray-800`}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(t, locale) }} />
       {/* Header: translucent over the dark hero */}
       <header className="sticky top-0 z-40 bg-[#052e16]/95 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-4">

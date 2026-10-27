@@ -11,8 +11,8 @@ import {
 
 // Pages for signed-out visitors (the landing page and sign-in screens); signed-in users go to the dashboard
 const AUTH_PAGES = ["/", "/login", "/signup", "/verify-email", "/forgot-password", "/reset-password"];
-// Open to everyone, signed in or not
-const PUBLIC_PAGES = ["/privacy"];
+// Open to everyone, signed in or not (the share image is what WhatsApp, Facebook etc. fetch)
+const PUBLIC_PAGES = ["/privacy", "/opengraph-image"];
 
 // Runs before every page and Server Function call. Access tokens live 15 minutes,
 // so when one is about to expire it is refreshed here: Server Components can't set
