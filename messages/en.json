@@ -1330,7 +1330,8 @@
       "features": "Features",
       "faq": "FAQ",
       "madeFor": "Made for Indian farmers 🇮🇳",
-      "rights": "© {year} FarmPaisa. All rights reserved."
+      "rights": "© {year} FarmPaisa. All rights reserved.",
+      "privacy": "Privacy policy"
     }
   }
 }
