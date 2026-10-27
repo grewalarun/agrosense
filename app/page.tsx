@@ -317,6 +317,7 @@ export default async function Home() {
               <li><Link href="/login" className="text-gray-600 hover:text-primary-700">{t("footer.signIn")}</Link></li>
               <li><a href="#faq" className="text-gray-600 hover:text-primary-700">{t("footer.faq")}</a></li>
               <li><Link href="/signup" className="text-gray-600 hover:text-primary-700">{t("footer.signUp")}</Link></li>
+              <li><Link href="/privacy" className="text-gray-600 hover:text-primary-700">{t("footer.privacy")}</Link></li>
             </ul>
           </nav>
         </div>
